@@ -26,7 +26,7 @@ export default function Container( ) {
 function Greating() {
     return (
         <div>
-            <p className="slogan-2"><strong>Semoga Belajar ReactJS Menyenangkan</strong></p>
+            <p className="slogan-2"><strong>Semoga Belajar ReactJS Menyenangkan sangat</strong></p>
         </div>
     );
 }
