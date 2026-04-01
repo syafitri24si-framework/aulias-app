@@ -1,0 +1,193 @@
+
+        /* styling untuk keseluruhan halaman - Tema SUPER VIBRANT */
+        body {
+            font-family: 'Quicksand', 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FFD93D 100%);
+            color: #2d2d2d;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .card {
+            max-width: 700px;
+            margin: 30px auto;
+            background: #FFF9F0;
+            padding: 30px;
+            border-radius: 24px;
+            border: 2px solid #FFB347;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Judul Utama */
+        h1 {
+            text-align: center;
+            margin: 0 0 5px 0;
+            padding: 0;
+            color: #FF6B35;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            text-shadow: 2px 2px 4px rgba(255, 107, 53, 0.2);
+        }
+
+        /* Slogan 1 */
+        .slogan-1 {
+            text-align: center;
+            margin: 0 0 5px 0;
+            padding: 0;
+            font-size: 1rem;
+            color: #F4A261;
+            font-weight: 600;
+        }
+
+        /* Slogan 2  */
+        .slogan-2 {
+            text-align: center;
+            font-style: italic;
+            margin: 0;
+            padding: 0;
+            font-size: 0.9rem;
+            color: #E76F51;
+        }
+
+        /* Garis pemisah */
+        .section-divider {
+            border: none;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B35, #F4A261, #FFD93D, #F4A261, #FF6B35);
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        /* Judul Biodata Saya */
+        h2 {
+            text-align: center;
+            color: #FF6B35;
+            margin: 10px 0 25px 0;
+            padding: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            position: relative;
+        }
+
+        /* Container 2 kolom */
+        .biodata-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        /* Bagian Foto Profil - BORDER ORANYE CERAH */
+        .foto-profile {
+            flex: 1;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .foto-persegi {
+            width: 210px;
+            height: 310px;
+            background: linear-gradient(135deg, #FF6B35, #F4A261);
+            margin: 0 auto;
+            border: 4px solid #FFD93D;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+        }
+
+        .foto-persegi img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Bagian Info Biodata */
+        .info-biodata {
+            flex: 1.5;
+            min-width: 250px;
+            background: #FFFFFF;
+            padding: 18px 22px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #FF6B35;
+            border-right: 1px solid #FFD93D;
+            border-top: 1px solid #FFD93D;
+            border-bottom: 1px solid #FFD93D;
+        }
+
+        .info-biodata p {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: #2d2d2d;
+        }
+
+        .info-biodata strong {
+            display: inline-block;
+            width: 125px;
+            color: #E76F51;
+            font-weight: 800;
+        }
+
+        /* Quote Section */
+        .quote {
+            background: #FFFFFF;
+            padding: 25px 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #FFB347;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .quote:before {
+            content: '"';
+            font-size: 60px;
+            color: #FF6B35;
+            opacity: 0.4;
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-family: serif;
+        }
+
+        .quote-text {
+            font-style: italic;
+            font-size: 1rem;
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #2d2d2d;
+            font-weight: 500;
+        }
+
+        .quote-author {
+            margin: 15px 0 0 0;
+            font-weight: 800;
+            color: #F4A261;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #E76F51;
+            font-weight: 500;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #FFD93D;
+            margin: 20px 0;
+        }
+    
