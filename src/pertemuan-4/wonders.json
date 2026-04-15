@@ -1,0 +1,259 @@
+[
+  {
+    "id": 1,
+    "name": "Great Wall of China",
+    "category": "Historical",
+    "image": "TembokChina.jpg",
+    "yearBuilt": "7th century BC",
+    "isUNESCO": true,
+    "location": { "country": "China", "city": "Beijing", "continent": "Asia" },
+    "details": { "material": "Stone", "size": "Very Large", "condition": "Good" },
+    "facts": { "famousFor": "Longest wall", "visitorsPerYear": "10M", "interesting": "Visible myth from space" },
+    "activities": ["Hiking", "Photography", "Tour"]
+  },
+  {
+    "id": 2,
+    "name": "Taj Mahal",
+    "category": "Historical",
+    "image": "TajMahal.jpg",
+    "yearBuilt": "1632",
+    "isUNESCO": true,
+    "location": { "country": "India", "city": "Agra", "continent": "Asia" },
+    "details": { "material": "Marble", "size": "Large", "condition": "Excellent" },
+    "facts": { "famousFor": "Symbol of love", "visitorsPerYear": "8M", "interesting": "Built by Shah Jahan" },
+    "activities": ["Sightseeing", "Photography"]
+  },
+  {
+    "id": 3,
+    "name": "Machu Picchu",
+    "category": "Historical",
+    "image": "MachuPiccu.jpg",
+    "yearBuilt": "1450",
+    "isUNESCO": true,
+    "location": { "country": "Peru", "city": "Cusco", "continent": "South America" },
+    "details": { "material": "Stone", "size": "Large", "condition": "Preserved" },
+    "facts": { "famousFor": "Inca ruins", "visitorsPerYear": "1.5M", "interesting": "Hidden city" },
+    "activities": ["Hiking", "Exploration"]
+  },
+
+  {
+    "id": 4,
+    "name": "Colosseum",
+    "category": "Historical",
+    "image": "colosseum.jpg",
+    "yearBuilt": "80 AD",
+    "isUNESCO": true,
+    "location": { "country": "Italy", "city": "Rome", "continent": "Europe" },
+    "details": { "material": "Concrete", "size": "Large", "condition": "Ruins" },
+    "facts": { "famousFor": "Gladiator arena", "visitorsPerYear": "6M", "interesting": "Ancient stadium" },
+    "activities": ["Tour", "History"]
+  },
+
+  {
+    "id": 5,
+    "name": "Petra",
+    "category": "Historical",
+    "image": "petra.jpg",
+    "yearBuilt": "5th century BC",
+    "isUNESCO": true,
+    "location": { "country": "Jordan", "city": "Ma'an", "continent": "Asia" },
+    "details": { "material": "Rock", "size": "Large", "condition": "Ancient" },
+    "facts": { "famousFor": "Rock-cut city", "visitorsPerYear": "1M", "interesting": "Hidden city" },
+    "activities": ["Exploration", "Photography"]
+  },
+
+  {
+    "id": 6,
+    "name": "Christ the Redeemer",
+    "category": "Modern",
+    "image": "christ.jpg",
+    "yearBuilt": "1931",
+    "isUNESCO": true,
+    "location": { "country": "Brazil", "city": "Rio", "continent": "South America" },
+    "details": { "material": "Concrete", "size": "Medium", "condition": "Good" },
+    "facts": { "famousFor": "Jesus statue", "visitorsPerYear": "2M", "interesting": "Icon of Brazil" },
+    "activities": ["Sightseeing"]
+  },
+
+  {
+    "id": 7,
+    "name": "Chichen Itza",
+    "category": "Historical",
+    "image": "chichen.jpg",
+    "yearBuilt": "600 AD",
+    "isUNESCO": true,
+    "location": { "country": "Mexico", "city": "Yucatan", "continent": "North America" },
+    "details": { "material": "Stone", "size": "Large", "condition": "Preserved" },
+    "facts": { "famousFor": "Mayan pyramid", "visitorsPerYear": "2.5M", "interesting": "Astronomy alignment" },
+    "activities": ["Tour"]
+  },
+
+  {
+    "id": 8,
+    "name": "Great Pyramid of Giza",
+    "category": "Ancient",
+    "image": "giza.jpg",
+    "yearBuilt": "2560 BC",
+    "isUNESCO": true,
+    "location": { "country": "Egypt", "city": "Giza", "continent": "Africa" },
+    "details": { "material": "Limestone", "size": "Huge", "condition": "Ancient" },
+    "facts": { "famousFor": "Oldest wonder", "visitorsPerYear": "14M", "interesting": "Only surviving ancient wonder" },
+    "activities": ["Exploration"]
+  },
+
+  {
+    "id": 9,
+    "name": "Eiffel Tower",
+    "category": "Modern",
+    "image": "eiffel2.jpg",
+    "yearBuilt": "1889",
+    "isUNESCO": false,
+    "location": { "country": "France", "city": "Paris", "continent": "Europe" },
+    "details": { "material": "Iron", "size": "Tall", "condition": "Excellent" },
+    "facts": { "famousFor": "Paris icon", "visitorsPerYear": "7M", "interesting": "Built for expo" },
+    "activities": ["Sightseeing", "Photography"]
+  },
+
+  {
+    "id": 10,
+    "name": "Statue of Liberty",
+    "category": "Modern",
+    "image": "liberty.jpg",
+    "yearBuilt": "1886",
+    "isUNESCO": true,
+    "location": { "country": "USA", "city": "New York", "continent": "North America" },
+    "details": { "material": "Copper", "size": "Tall", "condition": "Good" },
+    "facts": { "famousFor": "Freedom symbol", "visitorsPerYear": "4M", "interesting": "Gift from France" },
+    "activities": ["Tour"]
+  },
+
+  {
+    "id": 11,
+    "name": "Angkor Wat",
+    "category": "Historical",
+    "image": "angkor.jpg",
+    "yearBuilt": "12th century",
+    "isUNESCO": true,
+    "location": { "country": "Cambodia", "city": "Siem Reap", "continent": "Asia" },
+    "details": { "material": "Stone", "size": "Huge", "condition": "Preserved" },
+    "facts": { "famousFor": "Largest temple", "visitorsPerYear": "2M", "interesting": "Religious site" },
+    "activities": ["Exploration"]
+  },
+
+  {
+    "id": 12,
+    "name": "Stonehenge",
+    "category": "Ancient",
+    "image": "stonehenge.jpg",
+    "yearBuilt": "3000 BC",
+    "isUNESCO": true,
+    "location": { "country": "UK", "city": "Wiltshire", "continent": "Europe" },
+    "details": { "material": "Stone", "size": "Medium", "condition": "Ancient" },
+    "facts": { "famousFor": "Mystery stones", "visitorsPerYear": "1M", "interesting": "Unknown purpose" },
+    "activities": ["Tour"]
+  },
+
+  {
+    "id": 13,
+    "name": "Mount Everest",
+    "category": "Natural",
+    "image": "everest.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": false,
+    "location": { "country": "Nepal", "city": "Himalaya", "continent": "Asia" },
+    "details": { "material": "Rock", "size": "Highest", "condition": "Extreme" },
+    "facts": { "famousFor": "Highest mountain", "visitorsPerYear": "Few", "interesting": "8848m high" },
+    "activities": ["Climbing"]
+  },
+
+  {
+    "id": 14,
+    "name": "Grand Canyon",
+    "category": "Natural",
+    "image": "grandcanyon.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": true,
+    "location": { "country": "USA", "city": "Arizona", "continent": "North America" },
+    "details": { "material": "Rock", "size": "Huge", "condition": "Natural" },
+    "facts": { "famousFor": "Massive canyon", "visitorsPerYear": "5M", "interesting": "Carved by river" },
+    "activities": ["Hiking"]
+  },
+
+  {
+    "id": 15,
+    "name": "Aurora Borealis",
+    "category": "Natural",
+    "image": "aurora.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": false,
+    "location": { "country": "Norway", "city": "Tromso", "continent": "Europe" },
+    "details": { "material": "Light", "size": "Sky", "condition": "Seasonal" },
+    "facts": { "famousFor": "Northern lights", "visitorsPerYear": "Varies", "interesting": "Magnetic storms" },
+    "activities": ["Viewing"]
+  },
+
+  {
+    "id": 16,
+    "name": "Niagara Falls",
+    "category": "Natural",
+    "image": "niagara.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": false,
+    "location": { "country": "Canada", "city": "Ontario", "continent": "North America" },
+    "details": { "material": "Water", "size": "Large", "condition": "Flowing" },
+    "facts": { "famousFor": "Waterfall", "visitorsPerYear": "12M", "interesting": "Powerful flow" },
+    "activities": ["Boat Ride"]
+  },
+
+  {
+    "id": 17,
+    "name": "Burj Khalifa",
+    "category": "Modern",
+    "image": "burj.jpg",
+    "yearBuilt": "2010",
+    "isUNESCO": false,
+    "location": { "country": "UAE", "city": "Dubai", "continent": "Asia" },
+    "details": { "material": "Steel", "size": "Tallest", "condition": "New" },
+    "facts": { "famousFor": "Tallest building", "visitorsPerYear": "2M", "interesting": "828m tall" },
+    "activities": ["Observation"]
+  },
+
+  {
+    "id": 18,
+    "name": "Sydney Opera House",
+    "category": "Modern",
+    "image": "sydney.jpg",
+    "yearBuilt": "1973",
+    "isUNESCO": true,
+    "location": { "country": "Australia", "city": "Sydney", "continent": "Australia" },
+    "details": { "material": "Concrete", "size": "Large", "condition": "Excellent" },
+    "facts": { "famousFor": "Opera building", "visitorsPerYear": "8M", "interesting": "Unique design" },
+    "activities": ["Show"]
+  },
+
+  {
+    "id": 19,
+    "name": "Mount Fuji",
+    "category": "Natural",
+    "image": "fuji.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": true,
+    "location": { "country": "Japan", "city": "Honshu", "continent": "Asia" },
+    "details": { "material": "Volcano", "size": "Tall", "condition": "Active" },
+    "facts": { "famousFor": "Iconic volcano", "visitorsPerYear": "300K", "interesting": "Sacred mountain" },
+    "activities": ["Climbing"]
+  },
+
+  {
+    "id": 20,
+    "name": "Santorini",
+    "category": "Natural",
+    "image": "santorini.jpg",
+    "yearBuilt": "Natural",
+    "isUNESCO": false,
+    "location": { "country": "Greece", "city": "Santorini", "continent": "Europe" },
+    "details": { "material": "Island", "size": "Medium", "condition": "Tourist" },
+    "facts": { "famousFor": "Beautiful island", "visitorsPerYear": "2M", "interesting": "Blue domes" },
+    "activities": ["Vacation"]
+  }
+]
