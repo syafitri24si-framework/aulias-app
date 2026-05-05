@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: "Barlow";
+  src: url("/fonts/Barlow-Regular.ttf");
+}
+
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf");
+}
+
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Bold.ttf");
+  font-weight: bold;
+}
+
+
+body {
+  font-family: "Barlow", sans-serif;
+}
+
+
+/* Custom warna Rotte Bakery (opsional, bisa pakai Tailwind standar juga) */
+.bg-rotte-brown {
+  background-color: #8B5E3C;
+}
+.text-rotte-brown {
+  color: #8B5E3C;
+}
+.border-rotte-brown {
+  border-color: #8B5E3C;
+}
+.hover\:bg-rotte-brown:hover {
+  background-color: #8B5E3C;
+}
+

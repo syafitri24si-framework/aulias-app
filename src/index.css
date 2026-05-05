@@ -11,9 +11,11 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
+
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -25,10 +27,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+
   @media (max-width: 1024px) {
     font-size: 16px;
   }
 }
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -45,14 +49,17 @@
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
+
   #social .button-icon {
     filter: invert(1) brightness(2);
   }
 }
 
+
 body {
   margin: 0;
 }
+
 
 #root {
   width: 1126px;
@@ -66,12 +73,14 @@ body {
   box-sizing: border-box;
 }
 
+
 h1,
 h2 {
   font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
 }
+
 
 h1 {
   font-size: 56px;
@@ -95,6 +104,7 @@ p {
   margin: 0;
 }
 
+
 code,
 .counter {
   font-family: var(--mono);
@@ -103,9 +113,13 @@ code,
   color: var(--text-h);
 }
 
+
 code {
   font-size: 15px;
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+
+
