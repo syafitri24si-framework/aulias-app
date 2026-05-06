@@ -1,36 +1,78 @@
 import { FaHome, FaShoppingCart, FaUsers, FaGem, FaTags, FaChartLine } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
+const GOLD = "#D4AF37";
 
 export default function Sidebar() {
-    const menuClass = ({ isActive }) =>
-        `flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300
-        ${isActive
-            ? "bg-amber-100 text-amber-800 font-semibold"
-            : "text-gray-600 hover:bg-amber-50 hover:text-amber-700"
-        }`;
-
-
     return (
-        <div className="w-64 bg-white p-6 flex flex-col justify-between min-h-screen border-r">
+        <div style={{
+            width: 260,
+            background: "linear-gradient(180deg, #0A0C10 0%, #111318 100%)",
+            padding: "24px 16px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            minHeight: "100vh",
+            borderRight: "1px solid rgba(212, 175, 55, 0.2)"
+        }}>
             <div>
-                <h1 className="text-3xl font-bold mb-1">
-                    Rotte<span className="text-amber-800">.</span>
-                </h1>
-                <p className="text-gray-400 text-sm mb-8">Bakery CRM</p>
+                {/* Logo */}
+                // Di bagian logo sidebar
+<div style={{
+    width: 40, height: 40, borderRadius: 12,
+    background: "linear-gradient(135deg, #D4AF37, #B8942E)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 20, flexShrink: 0
+}}>
+    <img 
+    src={logoRotte} 
+        alt="Rotte" 
+        style={{ width: 28, height: 28, objectFit: "contain" }}
+    />
+</div>
+                {/* Nav Label */}
+                <div style={{ fontSize: 10, color: "rgba(212, 175, 55, 0.5)", fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 12, paddingLeft: 12 }}>
+                    Navigasi
+                </div>
 
-
-                <ul className="space-y-3">
-                    <NavLink to="/" className={menuClass}><FaHome /> Dashboard</NavLink>
-                    <NavLink to="/orders" className={menuClass}><FaShoppingCart /> Orders</NavLink>
-                    <NavLink to="/customers" className={menuClass}><FaUsers /> Customers</NavLink>
-                    <NavLink to="/loyalty" className={menuClass}><FaGem /> Loyalty</NavLink>
-                    <NavLink to="/promos" className={menuClass}><FaTags /> Promos</NavLink>
-                    <NavLink to="/reports" className={menuClass}><FaChartLine /> Reports</NavLink>
-                </ul>
+                <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {[
+                        { to: "/", icon: <FaHome size={14} />, label: "Dashboard" },
+                        { to: "/orders", icon: <FaShoppingCart size={14} />, label: "Orders" },
+                        { to: "/customers", icon: <FaUsers size={14} />, label: "Customers" },
+                        { to: "/loyalty", icon: <FaGem size={14} />, label: "Loyalty" },
+                        { to: "/promos", icon: <FaTags size={14} />, label: "Promos" },
+                        { to: "/reports", icon: <FaChartLine size={14} />, label: "Reports" },
+                    ].map(item => (
+                        <NavLink
+                            key={item.to}
+                            to={item.to}
+                            end={item.to === "/"}
+                            style={({ isActive }) => ({
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 12,
+                                padding: "12px 14px",
+                                borderRadius: 12,
+                                textDecoration: "none",
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: isActive ? "#D4AF37" : "rgba(255,255,255,0.55)",
+                                background: isActive ? "rgba(212, 175, 55, 0.1)" : "transparent",
+                                borderLeft: isActive ? "3px solid #D4AF37" : "3px solid transparent",
+                                transition: "all 0.15s"
+                            })}
+                        >
+                            {item.icon}
+                            {item.label}
+                        </NavLink>
+                    ))}
+                </nav>
             </div>
-            <div className="text-xs text-gray-400">© 2025 Rotte Bakery</div>
+
+            <div style={{ fontSize: 11, color: "rgba(212, 175, 55, 0.3)", paddingLeft: 12, fontWeight: 500 }}>
+                © 2025 Rotte Bakery
+            </div>
         </div>
     );
 }
-

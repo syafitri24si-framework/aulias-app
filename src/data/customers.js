@@ -1,5 +1,4 @@
 const customers = [
-  // ========== MEMBERS ==========
   { id: 1, name: "Aulia Syafitri", email: "aulia@rotte.com", phone: "081234567890", loyalty: "Gold", points: 1250, totalSpent: 2500000, joinDate: "2024-01-15" },
   { id: 2, name: "Fitriana Tasya", email: "fitri@rotte.com", phone: "081234567891", loyalty: "Silver", points: 750, totalSpent: 1500000, joinDate: "2024-02-20" },
   { id: 3, name: "Givo Fadillah", email: "givo@rotte.com", phone: "081234567892", loyalty: "Gold", points: 2100, totalSpent: 4200000, joinDate: "2023-11-10" },
@@ -32,6 +31,4 @@ const customers = [
   { id: 30, name: "Hilman Fauzi", email: "hilman@email.com", phone: "081234567819", loyalty: "None", points: 0, totalSpent: 150000, joinDate: "2024-04-25" },
 ];
 
-
 export default customers;
-
