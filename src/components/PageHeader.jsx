@@ -1,5 +1,3 @@
-const GOLD = "#D4AF37";
-
 export default function PageHeader({ title, breadcrumb, children }) {
     const renderBreadcrumb = () => {
         if (Array.isArray(breadcrumb)) return breadcrumb.join(" / ");
@@ -8,37 +6,29 @@ export default function PageHeader({ title, breadcrumb, children }) {
 
     return (
         <div style={{ marginBottom: 24 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                 <div>
-                    <div style={{
-                        fontSize: 22,
+                    <h1 style={{
+                        fontSize: 28,
                         fontWeight: 800,
-                        color: "#F3F4F6",
-                        letterSpacing: "-0.5px"
+                        color: "#1A1A1A",
+                        letterSpacing: "-0.5px",
+                        margin: 0,
+                        fontFamily: "'Lato', sans-serif"
                     }}>
                         {title || "Dashboard"}
-                    </div>
+                    </h1>
                     <div style={{
-                        color: "#D4AF37",
-                        fontSize: 12,
-                        marginTop: 2,
+                        color: "#5E81F4",
+                        fontSize: 13,
+                        marginTop: 4,
                         fontWeight: 500,
-                        letterSpacing: 0.3
                     }}>
                         {breadcrumb ? renderBreadcrumb() : "Dashboard"}
                     </div>
                 </div>
                 {children ? children : (
-                    <button style={{
-                        background: "linear-gradient(135deg, #D4AF37, #B8942E)",
-                        color: "#000",
-                        border: "none",
-                        borderRadius: 12,
-                        padding: "9px 18px",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        cursor: "pointer"
-                    }}>
+                    <button className="figma-btn-primary">
                         Tambah Order
                     </button>
                 )}

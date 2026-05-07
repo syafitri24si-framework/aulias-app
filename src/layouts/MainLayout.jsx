@@ -2,20 +2,21 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
     FaTachometerAlt, FaUsers, FaShoppingCart, FaStar, FaTag,
-    FaChartBar, FaSignOutAlt, FaBars, FaTimes, FaBell, FaUser
+    FaChartBar, FaSignOutAlt, FaBars, FaTimes, FaBell, FaUser,
+    FaSearch
 } from "react-icons/fa";
 import logoRotte from "../assets/logo_rotte.png";
 
-const GOLD = "#D4AF37";
-const GOLD_DARK = "#B8942E";
+const PRIMARY = "#5E81F4";
+const PRIMARY_DARK = "#1B51E5";
 
 const NAV_ITEMS = [
-    { path: "/",          icon: <FaTachometerAlt />, label: "Dashboard" },
-    { path: "/customers", icon: <FaUsers />,          label: "Customers" },
-    { path: "/orders",    icon: <FaShoppingCart />,   label: "Orders" },
-    { path: "/loyalty",   icon: <FaStar />,           label: "Loyalty" },
-    { path: "/promos",    icon: <FaTag />,            label: "Promos" },
-    { path: "/reports",   icon: <FaChartBar />,       label: "Reports" },
+    { path: "/", icon: <FaTachometerAlt size={16} />, label: "Dashboard" },
+    { path: "/customers", icon: <FaUsers size={16} />, label: "Customers" },
+    { path: "/orders", icon: <FaShoppingCart size={16} />, label: "Orders" },
+    { path: "/loyalty", icon: <FaStar size={16} />, label: "Loyalty" },
+    { path: "/promos", icon: <FaTag size={16} />, label: "Promos" },
+    { path: "/reports", icon: <FaChartBar size={16} />, label: "Reports" },
 ];
 
 export default function MainLayout() {
@@ -31,14 +32,14 @@ export default function MainLayout() {
         <div style={{
             display: "flex",
             minHeight: "100vh",
-            background: "#0A0C10",
-            fontFamily: "'Inter', 'Segoe UI', sans-serif"
+            background: "#F6F6F6",
+            fontFamily: "'Lato', sans-serif"
         }}>
-            {/* ── Sidebar ── */}
+            {/* Sidebar */}
             <aside style={{
-                width: collapsed ? 72 : 240,
+                width: collapsed ? 72 : 260,
                 minHeight: "100vh",
-                background: "linear-gradient(180deg, #0D0F14 0%, #080A0E 100%)",
+                background: "#FFFFFF",
                 display: "flex",
                 flexDirection: "column",
                 transition: "width 0.25s ease",
@@ -48,19 +49,20 @@ export default function MainLayout() {
                 height: "100vh",
                 overflowY: "auto",
                 overflowX: "hidden",
-                borderRight: "1px solid rgba(212, 175, 55, 0.15)"
+                borderRight: "1px solid #F0F0F3",
+                boxShadow: "2px 0 8px rgba(0,0,0,0.02)"
             }}>
-                {/* Logo di sidebar */}
+                {/* Logo */}
                 <div style={{
                     padding: collapsed ? "20px 0" : "24px 20px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: collapsed ? "center" : "flex-start",
-                    borderBottom: "1px solid rgba(212, 175, 55, 0.15)"
+                    borderBottom: "1px solid #F0F0F3"
                 }}>
                     <div style={{
                         width: 40, height: 40, borderRadius: 12,
-                        background: "linear-gradient(135deg, #D4AF37, #B8942E)",
+                        background: PRIMARY,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0
                     }}>
@@ -72,20 +74,20 @@ export default function MainLayout() {
                     </div>
                     {!collapsed && (
                         <div style={{ marginLeft: 12 }}>
-                            <div style={{ color: "#F3F4F6", fontWeight: 800, fontSize: 18, lineHeight: 1 }}>
-                                Rotte<span style={{ color: "#D4AF37" }}>.</span>
+                            <div style={{ color: "#1A1A1A", fontWeight: 800, fontSize: 18, lineHeight: 1 }}>
+                                Rotte<span style={{ color: PRIMARY }}>.</span>
                             </div>
-                            <div style={{ color: "rgba(212, 175, 55, 0.5)", fontSize: 10, marginTop: 2 }}>Bakery CRM</div>
+                            <div style={{ color: "#8181A5", fontSize: 10, marginTop: 2 }}>Bakery CRM</div>
                         </div>
                     )}
                 </div>
 
-                {/* Nav */}
+                {/* Nav Menu */}
                 <nav style={{ flex: 1, padding: "20px 12px" }}>
                     {!collapsed && (
                         <div style={{
                             fontSize: 10, fontWeight: 700,
-                            color: "rgba(212, 175, 55, 0.5)",
+                            color: "#8181A5",
                             letterSpacing: 1.5, textTransform: "uppercase",
                             padding: "4px 10px 12px"
                         }}>Menu Utama</div>
@@ -99,76 +101,95 @@ export default function MainLayout() {
                                 display: "flex", alignItems: "center", gap: 12,
                                 padding: collapsed ? "12px 0" : "10px 14px",
                                 justifyContent: collapsed ? "center" : "flex-start",
-                                borderRadius: 12, marginBottom: 4,
-                                textDecoration: "none", fontSize: 13, fontWeight: 600,
-                                transition: "all 0.15s",
-                                background: isActive ? "rgba(212, 175, 55, 0.12)" : "transparent",
-                                color: isActive ? "#D4AF37" : "rgba(255,255,255,0.5)",
-                                borderLeft: isActive ? "3px solid #D4AF37" : "3px solid transparent",
+                                borderRadius: 10, marginBottom: 4,
+                                textDecoration: "none", fontSize: 14, fontWeight: 600,
+                                transition: "all 0.2s",
+                                background: isActive ? "rgba(94, 129, 244, 0.1)" : "transparent",
+                                color: isActive ? PRIMARY : "#464A5F",
+                                borderLeft: isActive ? "3px solid #5E81F4" : "3px solid transparent",
                             })}
                         >
-                            <span style={{ fontSize: 15, flexShrink: 0 }}>{item.icon}</span>
+                            <span style={{ fontSize: 16, flexShrink: 0, color: item.isActive ? PRIMARY : "#8181A5" }}>{item.icon}</span>
                             {!collapsed && <span>{item.label}</span>}
                         </NavLink>
                     ))}
                 </nav>
 
-                {/* Logout */}
-                <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(212, 175, 55, 0.15)" }}>
+                {/* Logout Button */}
+                <div style={{ padding: "16px 12px", borderTop: "1px solid #F0F0F3" }}>
                     <button
                         onClick={handleLogout}
                         style={{
                             width: "100%", display: "flex", alignItems: "center", gap: 12,
                             justifyContent: collapsed ? "center" : "flex-start",
                             padding: collapsed ? "12px 0" : "10px 14px",
-                            background: "none", border: "none", cursor: "pointer", borderRadius: 12,
-                            color: "rgba(255,255,255,0.4)", fontSize: 13, fontWeight: 600,
-                            transition: "all 0.15s",
+                            background: "none", border: "none", cursor: "pointer", borderRadius: 10,
+                            color: "#8181A5", fontSize: 14, fontWeight: 600,
+                            transition: "all 0.2s",
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(212, 175, 55, 0.1)"; e.currentTarget.style.color = "#D4AF37"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(94, 129, 244, 0.1)"; e.currentTarget.style.color = PRIMARY; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#8181A5"; }}
                     >
-                        <FaSignOutAlt size={13} />
+                        <FaSignOutAlt size={14} />
                         {!collapsed && <span>Logout</span>}
                     </button>
                 </div>
             </aside>
 
-            {/* ── Main Content ── */}
+            {/* Main Content */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-                {/* Topbar */}
+                {/* Topbar Header */}
                 <header style={{
-                    background: "rgba(13, 15, 20, 0.8)",
-                    backdropFilter: "blur(12px)",
-                    borderBottom: "1px solid rgba(212, 175, 55, 0.15)",
+                    background: "#FFFFFF",
+                    borderBottom: "1px solid #F0F0F3",
                     padding: "0 28px",
-                    height: 60,
+                    height: 64,
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     position: "sticky", top: 0, zIndex: 30,
                 }}>
-                    <button
-                        onClick={() => setCollapsed(!collapsed)}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "#D4AF37", display: "flex", alignItems: "center", padding: 4 }}
-                    >
-                        {collapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
-                    </button>
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                        <button
+                            onClick={() => setCollapsed(!collapsed)}
+                            style={{ background: "none", border: "none", cursor: "pointer", color: PRIMARY, display: "flex", alignItems: "center", padding: 8, borderRadius: 8 }}
+                        >
+                            {collapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
+                        </button>
+                        <div style={{ position: "relative", width: 280 }}>
+                            <FaSearch style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                style={{
+                                    width: "100%",
+                                    border: "1px solid #ECECF2",
+                                    padding: "9px 14px 9px 38px",
+                                    borderRadius: 10,
+                                    fontSize: 13,
+                                    outline: "none",
+                                    color: "#464A5F",
+                                    background: "#F5F5FA",
+                                    boxSizing: "border-box"
+                                }}
+                            />
+                        </div>
+                    </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-                        <button style={{ background: "none", border: "none", cursor: "pointer", position: "relative", color: "#D4AF37", display: "flex" }}>
-                            <FaBell size={16} />
-                            <span style={{ position: "absolute", top: -2, right: -2, width: 8, height: 8, background: "#D4AF37", borderRadius: "50%", border: "1.5px solid #0D0F14" }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                        <button style={{ background: "none", border: "none", cursor: "pointer", position: "relative", color: PRIMARY, display: "flex", padding: 8, borderRadius: 8 }}>
+                            <FaBell size={17} />
+                            <span style={{ position: "absolute", top: 4, right: 4, width: 8, height: 8, background: "#FF808B", borderRadius: "50%", border: "2px solid #FFF" }} />
                         </button>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
                             <div style={{
-                                width: 36, height: 36, borderRadius: 12,
-                                background: "linear-gradient(135deg, #D4AF37, #F5D76E)",
+                                width: 40, height: 40, borderRadius: 12,
+                                background: PRIMARY,
                                 display: "flex", alignItems: "center", justifyContent: "center"
                             }}>
-                                <FaUser size={14} style={{ color: "#000" }} />
+                                <FaUser size={14} style={{ color: "#FFF" }} />
                             </div>
                             <div>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: "#F3F4F6", lineHeight: 1 }}>Admin</div>
-                                <div style={{ fontSize: 10, color: "#D4AF37" }}>Rotte Bakery</div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1A", lineHeight: 1 }}>Admin Rotte</div>
+                                <div style={{ fontSize: 11, color: PRIMARY }}>Superadmin</div>
                             </div>
                         </div>
                     </div>
