@@ -32,10 +32,10 @@ export default function Login() {
         setError("");
         
         // ✅ PAKAI ENDPOINT YANG BENAR
-        axios.post("https://dummyjson.com/auth/login", {
-            username: dataForm.username,
-            password: dataForm.password,
-        })
+      axios.post("https://dummyjson.com/auth/login", {
+    username: dataForm.username,
+    password: dataForm.password,
+})
         .then((response) => {
             if (response.status === 200) {
                 localStorage.setItem("token", response.data.token);
