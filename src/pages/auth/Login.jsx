@@ -171,6 +171,8 @@ export default function Login() {
 
             <div style={{ textAlign: "center", marginTop: 20, fontSize: 13, color: "#AAABB0", fontFamily: "'Lato', sans-serif" }}>
                 Belum punya akun? <Link to="/register" style={{ color: PRIMARY, fontWeight: 700, textDecoration: "none" }}>Daftar sekarang</Link>
+
+
             </div>
 
             <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

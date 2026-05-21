@@ -6,6 +6,7 @@ import Loading from "./components/Loading";
 
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const Customers = React.lazy(() => import("./pages/Customers"));
+const CustomerDetail = React.lazy(() => import("./pages/CustomerDetail"));
 const Orders = React.lazy(() => import("./pages/Orders"));
 const Loyalty = React.lazy(() => import("./pages/Loyalty"));
 const Promos = React.lazy(() => import("./pages/Promos"));
@@ -26,10 +27,12 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
+          <Route path="/customers/:id" element={<CustomerDetail />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/loyalty" element={<Loyalty />} />
           <Route path="/promos" element={<Promos />} />
           <Route path="/reports" element={<Reports />} />
+          
         </Route>
 
         {/* Halaman auth tetap bisa diakses */}

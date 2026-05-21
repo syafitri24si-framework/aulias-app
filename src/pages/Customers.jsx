@@ -3,6 +3,7 @@ import { FaUserPlus, FaSearch, FaTimes, FaUser, FaCookie, FaCrown, FaMedal, FaTr
 import PageHeader from "../components/PageHeader";
 import customersData from "../data/customers";
 import orders from "../data/orders";
+import { Link } from "react-router-dom";
 
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
@@ -250,8 +251,10 @@ export default function Customers() {
                                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                             <Avatar name={c.name} />
                                             <div>
-                                                <div style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name || "-"}</div>
-                                                <div style={{ fontSize: 11, color: "#AAABB0" }}>ID #{c.id}</div>
+                                            <Link to={`/customers/${c.id}`} style={{ textDecoration: "none", fontWeight: 600, color: "#1A1A1A" }}>
+                                             {c.name || "-"}
+                                            </Link>                                                
+                                            <div style={{ fontSize: 11, color: "#AAABB0" }}>ID #{c.id}</div>
                                             </div>
                                         </div>
                                     </td>
