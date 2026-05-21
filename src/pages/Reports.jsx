@@ -1,30 +1,36 @@
+// [COM] Import komponen
 import { useEffect, useRef } from "react";
 import { FaChartBar, FaUsers, FaExclamationTriangle, FaArrowUp, FaDownload, FaCookie } from "react-icons/fa";
 import PageHeader from "../components/PageHeader";
+import Button from "../components/Button";
+import Card from "../components/Card";
+import StatusBadge from "../components/StatusBadge";
 import customers from "../data/customers";
 import orders from "../data/orders";
 
 const PRIMARY = "#5E81F4";
-const PRIMARY_DARK = "#1B51E5";
 const SUCCESS = "#7CE7AC";
 const WARNING = "#F4BE5E";
-const ERROR = "#FF808B";
 
+// [COM] MetricCard component
 function MetricCard({ label, value, sub, color, icon }) {
     return (
-        <div style={{ background: "#FFFFFF", borderRadius: 14, padding: "18px 20px", border: "1px solid #F0F0F3", display: "flex", gap: 14, alignItems: "flex-start" }}>
-            <div style={{ background: color + "15", borderRadius: 12, padding: 10, flexShrink: 0 }}>
-                <span style={{ color, fontSize: 16 }}>{icon}</span>
+        <Card padding="18px 20px">
+            <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                <div style={{ background: color + "15", borderRadius: 12, padding: 10, flexShrink: 0 }}>
+                    <span style={{ color, fontSize: 16 }}>{icon}</span>
+                </div>
+                <div>
+                    <div style={{ fontSize: 24, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A", marginTop: 4 }}>{label}</div>
+                    <div style={{ fontSize: 11, color: "#8181A5", marginTop: 2 }}>{sub}</div>
+                </div>
             </div>
-            <div>
-                <div style={{ fontSize: 24, fontWeight: 800, color, lineHeight: 1 }}>{value}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A1A", marginTop: 4 }}>{label}</div>
-                <div style={{ fontSize: 11, color: "#8181A5", marginTop: 2 }}>{sub}</div>
-            </div>
-        </div>
+        </Card>
     );
 }
 
+// [COM] HorizontalBar chart
 function HorizontalBar({ data }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -34,11 +40,9 @@ function HorizontalBar({ data }) {
         
         const loadChart = () => {
             if (!window.Chart) return;
-            
             if (chartRef.current) chartRef.current.destroy();
             
-            const ctx = canvasRef.current.getContext("2d");
-            chartRef.current = new window.Chart(ctx, {
+            chartRef.current = new window.Chart(canvasRef.current, {
                 type: "bar",
                 data: {
                     labels: data.map(d => d.label),
@@ -46,7 +50,6 @@ function HorizontalBar({ data }) {
                         data: data.map(d => d.value),
                         backgroundColor: data.map((_, i) => i === 0 ? PRIMARY : i === 1 ? "rgba(94, 129, 244, 0.6)" : "rgba(94, 129, 244, 0.3)"),
                         borderRadius: 8,
-                        borderSkipped: false,
                         barPercentage: 0.7,
                         categoryPercentage: 0.8
                     }]
@@ -55,49 +58,30 @@ function HorizontalBar({ data }) {
                     indexAxis: "y",
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { 
-                            callbacks: { 
-                                label: (ctx) => `${ctx.raw} pcs` 
-                            } 
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { 
-                            grid: { color: "#F0F0F3" }, 
-                            ticks: { color: "#8181A5", font: { size: 11, family: "'Lato', sans-serif" } } 
-                        },
-                        y: { 
-                            grid: { display: false }, 
-                            ticks: { color: "#464A5F", font: { size: 12, family: "'Lato', sans-serif" } } 
-                        }
+                        x: { grid: { color: "#F0F0F3" }, ticks: { color: "#8181A5", font: { size: 11 } } },
+                        y: { grid: { display: false }, ticks: { color: "#464A5F", font: { size: 12 } } }
                     }
                 }
             });
         };
         
-        if (window.Chart) {
-            loadChart();
-        } else {
+        if (window.Chart) loadChart();
+        else {
             const script = document.createElement("script");
             script.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
             script.onload = loadChart;
             document.head.appendChild(script);
         }
         
-        return () => {
-            if (chartRef.current) chartRef.current.destroy();
-        };
+        return () => { if (chartRef.current) chartRef.current.destroy(); };
     }, [data]);
 
-    return (
-        <div style={{ width: "100%", height: 220, position: "relative" }}>
-            <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
-        </div>
-    );
+    return <canvas ref={canvasRef} style={{ width: "100%", height: 220 }} />;
 }
 
+// [COM] StackedBar chart
 function StackedBar({ labels, datasets }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -107,11 +91,9 @@ function StackedBar({ labels, datasets }) {
         
         const loadChart = () => {
             if (!window.Chart) return;
-            
             if (chartRef.current) chartRef.current.destroy();
             
-            const ctx = canvasRef.current.getContext("2d");
-            chartRef.current = new window.Chart(ctx, {
+            chartRef.current = new window.Chart(canvasRef.current, {
                 type: "bar",
                 data: { 
                     labels, 
@@ -125,26 +107,15 @@ function StackedBar({ labels, datasets }) {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { 
-                            callbacks: { 
-                                label: (ctx) => `${ctx.dataset.label}: Rp ${ctx.raw.toLocaleString()}` 
-                            } 
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { 
-                            stacked: true, 
-                            grid: { display: false }, 
-                            ticks: { color: "#8181A5", font: { size: 11, family: "'Lato', sans-serif" } } 
-                        },
+                        x: { stacked: true, grid: { display: false }, ticks: { color: "#8181A5", font: { size: 11 } } },
                         y: { 
                             stacked: true, 
                             grid: { color: "#F0F0F3" }, 
                             ticks: { 
                                 color: "#8181A5", 
-                                font: { size: 11, family: "'Lato', sans-serif" }, 
+                                font: { size: 11 }, 
                                 callback: (v) => "Rp " + (v / 1000000).toFixed(0) + "jt" 
                             } 
                         }
@@ -153,25 +124,18 @@ function StackedBar({ labels, datasets }) {
             });
         };
         
-        if (window.Chart) {
-            loadChart();
-        } else {
+        if (window.Chart) loadChart();
+        else {
             const script = document.createElement("script");
             script.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
             script.onload = loadChart;
             document.head.appendChild(script);
         }
         
-        return () => {
-            if (chartRef.current) chartRef.current.destroy();
-        };
+        return () => { if (chartRef.current) chartRef.current.destroy(); };
     }, [labels, datasets]);
 
-    return (
-        <div style={{ width: "100%", height: 200, position: "relative" }}>
-            <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />
-        </div>
-    );
+    return <canvas ref={canvasRef} style={{ width: "100%", height: 200 }} />;
 }
 
 const getTopSellingItems = () => {
@@ -221,14 +185,12 @@ export default function Reports() {
     return (
         <div style={{ background: "#F6F6F6", minHeight: "100vh", paddingBottom: 32 }}>
             <PageHeader title="Laporan CRM" breadcrumb={["Dashboard", "Reports"]}>
-                <button style={{ display: "flex", alignItems: "center", gap: 7, background: "#FFFFFF", color: PRIMARY, border: `1px solid ${PRIMARY}`, borderRadius: 12, padding: "9px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(94, 129, 244, 0.05)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "#FFFFFF"}>
-                    <FaDownload size={11} /> Export PDF
-                </button>
+                <Button type="outline" icon={FaDownload}>
+                    Export PDF
+                </Button>
             </PageHeader>
 
-            {/* Metric Cards */}
+            {/* [COM] Metric Cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 12, marginBottom: 20 }}>
                 <MetricCard label="Total Transaksi" value={totalTransaction} sub="Semua status" color={PRIMARY} icon={<FaChartBar />} />
                 <MetricCard label="Total Pendapatan" value={`Rp ${(totalRevenue / 1000000).toFixed(1)}jt`} sub="Gross revenue" color={SUCCESS} icon={<FaArrowUp />} />
@@ -238,17 +200,15 @@ export default function Reports() {
                 <MetricCard label="Kontribusi Gold/Silver" value={`Rp ${(memberRevenue / 1000000).toFixed(1)}jt`} sub="Member premium" color={PRIMARY} icon={<FaChartBar />} />
             </div>
 
-            {/* Charts Row */}
+            {/* [COM] Charts Row */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-                {/* Top Products Chart */}
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "22px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="22px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>🍞 Produk Terlaris</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Berdasarkan jumlah terjual</div>
                     <HorizontalBar data={topProducts} />
-                </div>
+                </Card>
 
-                {/* Revenue by Payment Method Chart */}
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "22px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="22px 24px">
                     <div style={{ marginBottom: 4 }}>
                         <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A" }}>Revenue per Metode Bayar</div>
                         <div style={{ fontSize: 12, color: PRIMARY, marginTop: 2 }}>6 bulan terakhir</div>
@@ -262,11 +222,11 @@ export default function Reports() {
                         ))}
                     </div>
                     <StackedBar labels={monthLabels} datasets={stackedDatasets} />
-                </div>
+                </Card>
             </div>
 
-            {/* Inactive Customers Table */}
-            <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "22px 24px", border: "1px solid #F0F0F3", marginBottom: 16 }}>
+            {/* [COM] Inactive Customers Table */}
+            <Card padding="22px 24px">
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                     <div style={{ background: "rgba(244, 190, 94, 0.1)", borderRadius: 10, padding: "6px 8px" }}>
                         <FaExclamationTriangle style={{ color: WARNING, fontSize: 14 }} />
@@ -280,41 +240,46 @@ export default function Reports() {
                     <table className="figma-table">
                         <thead>
                             <tr>
-                                <th>Pelanggan</th>
-                                <th>Menu Favorit</th>
-                                <th>Order Terakhir</th>
-                                <th>Total Belanja</th>
-                                <th>Aksi</th>
+                                <th>Pelanggan</th><th>Menu Favorit</th><th>Order Terakhir</th><th>Total Belanja</th><th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {inactiveCustomers.map(c => (
-                                <tr key={c.name}>
-                                    <td><div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(94, 129, 244, 0.1)", color: PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
-                                            {c.name.split(" ").map(w => w[0]).slice(0, 2).join("")}
-                                        </div>
-                                        <span style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name}</span>
-                                    </div></td>
-                                    <td><span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.1)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}>
-                                        <FaCookie size={10} style={{ color: PRIMARY }} />
-                                        <span style={{ fontSize: 12, color: PRIMARY }}>{c.favorite}</span>
-                                    </span></td>
-                                    <td><span style={{ background: "rgba(244, 190, 94, 0.1)", color: WARNING, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{c.lastOrder}</span></td>
-                                    <td style={{ fontWeight: 700, color: PRIMARY }}>Rp {c.spent.toLocaleString()}</td>
-                                    <td><button style={{ background: "rgba(94, 129, 244, 0.1)", color: PRIMARY, border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }} 
-                                        onMouseEnter={e => { e.currentTarget.style.background = PRIMARY; e.currentTarget.style.color = "#FFF"; }}
-                                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(94, 129, 244, 0.1)"; e.currentTarget.style.color = PRIMARY; }}>
-                                        Kirim Promo
-                                    </button></td>
-                                </tr>
-                            ))}
+                            {inactiveCustomers.map(c => {
+                                const initials = c.name.split(" ").map(w => w[0]).slice(0, 2).join("");
+                                return (
+                                    <tr key={c.name}>
+                                        <td>
+                                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(94, 129, 244, 0.1)", color: PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
+                                                    {initials}
+                                                </div>
+                                                <span style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.1)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}>
+                                                <FaCookie size={10} style={{ color: PRIMARY }} />
+                                                <span style={{ fontSize: 12, color: PRIMARY }}>{c.favorite}</span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style={{ background: "rgba(244, 190, 94, 0.1)", color: WARNING, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{c.lastOrder}</span>
+                                        </td>
+                                        <td style={{ fontWeight: 700, color: PRIMARY }}>Rp {c.spent.toLocaleString()}</td>
+                                        <td>
+                                            <Button type="secondary" size="sm">
+                                                Kirim Promo
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
 
-            {/* Summary Footer */}
+            {/* [COM] Summary Footer */}
             <div style={{ background: PRIMARY, borderRadius: 16, padding: "22px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
                 <div>
                     <div style={{ color: "#FFF", fontWeight: 700, fontSize: 16 }}>🍞 Rotte Bakery CRM</div>

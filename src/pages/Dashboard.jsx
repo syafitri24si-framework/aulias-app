@@ -1,15 +1,21 @@
-import { FaShoppingCart, FaTruck, FaBan, FaDollarSign, FaUsers, FaStar, FaArrowUp, FaArrowDown, FaCookie } from "react-icons/fa";
+// [COM] Import komponen dari components
+import { FaShoppingCart, FaTruck, FaBan, FaDollarSign, FaUsers, FaStar, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import PageHeader from "../components/PageHeader";
+import StatCard from "../components/StatCard";
+import Card from "../components/Card";
+import StatusBadge from "../components/StatusBadge";
+import LoadingSpinner from "../components/LoadingSpinner";
+import TopProductsChart from "../components/TopProductsChart";  // [COM] Import TopProductsChart
 import customers from "../data/customers";
 import orders from "../data/orders";
 
 const PRIMARY = "#5E81F4";
-const PRIMARY_DARK = "#1B51E5";
 const SUCCESS = "#7CE7AC";
 const WARNING = "#F4BE5E";
 const ERROR = "#FF808B";
 
+// [COM] Fungsi getTopSellingItems (tetap, untuk diolah ke TopProductsChart)
 const getTopSellingItems = () => {
     const itemCount = {};
     orders.forEach(order => {
@@ -23,6 +29,7 @@ const getTopSellingItems = () => {
         .slice(0, 5);
 };
 
+// [COM] Sparkline component (tetap)
 function Sparkline({ data, color }) {
     const max = Math.max(...data);
     const min = Math.min(...data);
@@ -36,47 +43,7 @@ function Sparkline({ data, color }) {
     );
 }
 
-function StatCard({ icon, label, value, sub, trend, sparkData, accent, onClick }) {
-    const isUp = trend >= 0;
-    return (
-        <div
-            onClick={onClick}
-            style={{
-                background: "#FFFFFF",
-                borderRadius: 16,
-                padding: "18px 20px",
-                border: "1px solid #F0F0F3",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.02)"
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 20px rgba(94,129,244,0.1)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "#F0F0F3"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.02)"; }}
-        >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div style={{ background: "rgba(94, 129, 244, 0.1)", borderRadius: 12, width: 42, height: 42, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ color: PRIMARY, fontSize: 18 }}>{icon}</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600, color: isUp ? SUCCESS : ERROR }}>
-                    {isUp ? <FaArrowUp size={10} /> : <FaArrowDown size={10} />}
-                    {Math.abs(trend)}%
-                </div>
-            </div>
-            <div>
-                <div style={{ fontSize: 26, fontWeight: 700, color: "#1A1A1A", lineHeight: 1 }}>{value}</div>
-                <div style={{ fontSize: 13, color: "#8181A5", marginTop: 4 }}>{label}</div>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-                <span style={{ fontSize: 11, color: "#AAABB0" }}>{sub}</span>
-                {sparkData && <Sparkline data={sparkData} color={accent || PRIMARY} />}
-            </div>
-        </div>
-    );
-}
-
+// [COM] BarChart component (tetap)
 function BarChart({ data, labels }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -128,6 +95,7 @@ function BarChart({ data, labels }) {
     return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
 }
 
+// [COM] LineChart component (tetap)
 function LineChart({ data, labels }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -177,6 +145,7 @@ function LineChart({ data, labels }) {
     return <canvas ref={canvasRef} style={{ width: "100%", height: "100%" }} />;
 }
 
+// [COM] PieChart component (tetap)
 function PieChart({ segments }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -221,12 +190,8 @@ function PieChart({ segments }) {
     return <canvas ref={canvasRef} style={{ width: "160px", height: "160px" }} />;
 }
 
+// [COM] RecentOrders component (tetap)
 function RecentOrders({ orders }) {
-    const statusStyle = {
-        Completed: { background: "rgba(124, 231, 172, 0.15)", color: SUCCESS },
-        Pending: { background: "rgba(244, 190, 94, 0.15)", color: WARNING },
-        Cancelled: { background: "rgba(255, 128, 139, 0.15)", color: ERROR },
-    };
     return (
         <div style={{ width: "100%", overflowX: "auto" }}>
             <table className="figma-table">
@@ -247,7 +212,7 @@ function RecentOrders({ orders }) {
                                     ))}
                                 </div>
                             </td>
-                            <td><span style={{ ...statusStyle[o.status], padding: "4px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>{o.status}</span></td>
+                            <td><StatusBadge status={o.status} /></td>
                             <td style={{ fontWeight: 600, color: PRIMARY }}>Rp {o.totalPrice.toLocaleString()}</td>
                             <td style={{ color: "#8181A5" }}>{o.orderDate}</td>
                         </tr>
@@ -258,6 +223,7 @@ function RecentOrders({ orders }) {
     );
 }
 
+// [COM] TopCustomerItem component (tetap)
 function TopCustomerItem({ rank, name, spent, tier, favoriteItem }) {
     const tierColor = { Gold: PRIMARY, Silver: "#8181A5", Bronze: "#F4BE5E", None: "#AAABB0" };
     const initials = name.split(" ").map(w => w[0]).slice(0, 2).join("");
@@ -323,41 +289,20 @@ export default function Dashboard() {
 
             {/* Stat Cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 16, marginBottom: 24 }}>
-                <StatCard icon={<FaShoppingCart />} label="Total Orders" value={totalOrders} sub="Semua waktu" trend={12} sparkData={sparkOrders} onClick={() => setModal({ title: "Total Orders", value: totalOrders })} />
-                <StatCard icon={<FaTruck />} label="Selesai" value={totalCompleted} sub="Completed orders" trend={8} sparkData={[18, 22, 20, 26, 23, totalCompleted]} onClick={() => setModal({ title: "Completed Orders", value: totalCompleted })} />
-                <StatCard icon={<FaBan />} label="Dibatalkan" value={totalCancelled} sub="Cancelled orders" trend={-3} sparkData={[5, 3, 6, 4, 5, totalCancelled]} accent={ERROR} onClick={() => setModal({ title: "Cancelled", value: totalCancelled })} />
-                <StatCard icon={<FaDollarSign />} label="Pendapatan" value={`Rp ${(totalRevenue / 1000000).toFixed(1)}jt`} sub="Total revenue" trend={15} sparkData={sparkRevenue} onClick={() => setModal({ title: "Total Revenue", value: `Rp ${totalRevenue.toLocaleString()}` })} />
-                <StatCard icon={<FaUsers />} label="Pelanggan" value={totalCustomers} sub="Terdaftar" trend={5} sparkData={[80, 92, 95, 101, 105, totalCustomers]} onClick={() => setModal({ title: "Total Customers", value: totalCustomers })} />
-                <StatCard icon={<FaStar />} label="Active Members" value={activeMembers} sub="Loyalty aktif" trend={9} sparkData={[30, 35, 32, 38, 36, activeMembers]} onClick={() => setModal({ title: "Active Members", value: activeMembers })} />
+                <StatCard icon={<FaShoppingCart />} label="Total Orders" value={totalOrders} sub="Semua waktu" onClick={() => setModal({ title: "Total Orders", value: totalOrders })} />
+                <StatCard icon={<FaTruck />} label="Selesai" value={totalCompleted} sub="Completed orders" onClick={() => setModal({ title: "Completed Orders", value: totalCompleted })} />
+                <StatCard icon={<FaBan />} label="Dibatalkan" value={totalCancelled} sub="Cancelled orders" onClick={() => setModal({ title: "Cancelled", value: totalCancelled })} />
+                <StatCard icon={<FaDollarSign />} label="Pendapatan" value={`Rp ${(totalRevenue / 1000000).toFixed(1)}jt`} sub="Total revenue" onClick={() => setModal({ title: "Total Revenue", value: `Rp ${totalRevenue.toLocaleString()}` })} />
+                <StatCard icon={<FaUsers />} label="Pelanggan" value={totalCustomers} sub="Terdaftar" onClick={() => setModal({ title: "Total Customers", value: totalCustomers })} />
+                <StatCard icon={<FaStar />} label="Active Members" value={activeMembers} sub="Loyalty aktif" onClick={() => setModal({ title: "Active Members", value: activeMembers })} />
             </div>
 
-            {/* Top 5 Menu Terlaris */}
-            <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3", marginBottom: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-                    <FaCookie style={{ color: PRIMARY, fontSize: 20 }} />
-                    <div>
-                        <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A" }}>🍞 Top 5 Menu Terlaris</div>
-                        <div style={{ fontSize: 12, color: PRIMARY }}>Berdasarkan jumlah pesanan</div>
-                    </div>
-                </div>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                    {topSellingItems.map((item, idx) => (
-                        <div key={item.name} style={{ flex: 1, minWidth: 100 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                                <span style={{ fontSize: 12, color: "#464A5F" }}>{idx + 1}. {item.name}</span>
-                                <span style={{ fontSize: 12, color: PRIMARY }}>{item.count}×</span>
-                            </div>
-                            <div style={{ height: 6, background: "#F0F0F3", borderRadius: 3 }}>
-                                <div style={{ height: "100%", width: `${(item.count / topSellingItems[0].count) * 100}%`, background: PRIMARY, borderRadius: 3 }} />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/* [COM] Top 5 Menu Terlaris - MENGGUNAKAN KOMPONEN TopProductsChart */}
+            <TopProductsChart products={topSellingItems} />
 
             {/* Pendapatan Bulanan & Status Order */}
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16, marginBottom: 16 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="20px 24px">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                         <div>
                             <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A" }}>Pendapatan Bulanan</div>
@@ -368,9 +313,9 @@ export default function Dashboard() {
                     <div style={{ position: "relative", height: 220 }}>
                         <BarChart data={revenueData} labels={monthLabels} />
                     </div>
-                </div>
+                </Card>
 
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="20px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Status Order</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Distribusi semua order</div>
                     <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
@@ -387,30 +332,30 @@ export default function Dashboard() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </Card>
             </div>
 
             {/* Tren Order & Top Pelanggan */}
             <div style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16, marginBottom: 16 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="20px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Tren Order</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Jumlah order per bulan</div>
                     <div style={{ position: "relative", height: 180 }}>
                         <LineChart data={orderTrendData} labels={monthLabels} />
                     </div>
-                </div>
+                </Card>
 
-                <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+                <Card padding="20px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>⭐ Top Pelanggan</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 16 }}>Berdasarkan total belanja + menu favorit</div>
                     {topCustomers.map((c, i) => (
                         <TopCustomerItem key={c.id} rank={i + 1} name={c.name} spent={c.totalSpent} tier={c.loyalty} favoriteItem={c.favoriteItem} />
                     ))}
-                </div>
+                </Card>
             </div>
 
             {/* Order Terbaru */}
-            <div style={{ background: "#FFFFFF", borderRadius: 16, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+            <Card padding="20px 24px">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                     <div>
                         <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A" }}>📦 Order Terbaru</div>
@@ -419,7 +364,7 @@ export default function Dashboard() {
                     <a href="/orders" style={{ fontSize: 12, color: PRIMARY, fontWeight: 600, textDecoration: "none" }}>Lihat semua →</a>
                 </div>
                 <RecentOrders orders={orders} />
-            </div>
+            </Card>
 
             {/* Modal */}
             {modal && (
@@ -440,8 +385,6 @@ export default function Dashboard() {
                         <button
                             onClick={() => setModal(null)}
                             style={{ width: "100%", background: PRIMARY, color: "#FFF", border: "none", borderRadius: 12, padding: "12px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
-                            onMouseEnter={e => e.currentTarget.style.background = PRIMARY_DARK}
-                            onMouseLeave={e => e.currentTarget.style.background = PRIMARY}
                         >Tutup</button>
                     </div>
                 </div>

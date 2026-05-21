@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 * {
   margin: 0;
@@ -7,16 +8,22 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: 'Lato', sans-serif;
-  background: #F6F6F6;
+  font-family: 'Inter', 'Lato', sans-serif;
+  background: linear-gradient(135deg, #F6F6F6 0%, #F1F2F6 100%);
   color: #464A5F;
+  min-height: 100vh;
 }
 
 :root {
   --primary: #5E81F4;
   --primary-dark: #1B51E5;
   --primary-light: #9698D6;
+  --primary-glow: rgba(94, 129, 244, 0.4);
   --secondary-pink: #FF808B;
   --secondary-green: #7CE7AC;
   --secondary-yellow: #F4BE5E;
@@ -26,32 +33,386 @@ body {
   --neutral-bg-light: #F5F5FA;
   --neutral-outline: #F0F0F3;
   --neutral-border: #ECECF2;
-  --neutral-text-dark: #000000;
+  --neutral-text-dark: #1A1A1A;
   --neutral-text-grey: #464A5F;
   --neutral-text-light: #AAABB0;
   --neutral-text-soft: #767D9F;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-primary: 0 4px 12px rgba(94, 129, 244, 0.25);
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #F0F0F3; border-radius: 10px; }
-::-webkit-scrollbar-thumb { background: #5E81F4; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #1B51E5; }
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
+::-webkit-scrollbar-track {
+  background: #F0F2F5;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ==================== ANIMATION CLASSES ==================== */
+.animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.4s ease forwards; }
+.animate-fadeInDown { animation: fadeInDown 0.4s ease forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.4s ease forwards; }
+.animate-slideInRight { animation: slideInRight 0.4s ease forwards; }
+.animate-scaleIn { animation: scaleIn 0.3s ease forwards; }
+.animate-pulse { animation: pulse 2s ease infinite; }
+.animate-bounce { animation: bounce 2s ease infinite; }
+
+/* Stagger children animations */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* ==================== CUSTOM COMPONENT STYLES ==================== */
+
+/* Modern Card */
 .figma-card {
   background: #FFFFFF;
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
   padding: 20px 24px;
-  border: 1px solid #F0F0F3;
+  border: 1px solid rgba(94, 129, 244, 0.08);
+  transition: all var(--transition-slow);
 }
 
+.figma-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(94, 129, 244, 0.15);
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+}
+
+/* Gradient Card */
+.gradient-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FC 100%);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary-cyan), var(--primary));
+  background-size: 200% 100%;
+  animation: gradientMove 3s ease infinite;
+}
+
+/* Modern Table */
 .figma-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
 }
 
-.figma-table thead tr { border-bottom: 1px solid #F0F0F3; }
-.figma-table th { text-align: left; padding: 12px 16px; color: #8181A5; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-.figma-table td { padding: 12px 16px; color: #464A5F; border-bottom: 1px solid #F0F0F3; }
-.figma-table tr:hover td { background: rgba(94, 129, 244, 0.05); }
+.figma-table thead tr {
+  border-bottom: 1px solid #F0F2F5;
+  background: #FAFBFD;
+}
+
+.figma-table th {
+  text-align: left;
+  padding: 14px 20px;
+  color: #8181A5;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.figma-table td {
+  padding: 14px 20px;
+  color: #464A5F;
+  border-bottom: 1px solid #F0F2F5;
+  transition: background var(--transition-fast);
+}
+
+.figma-table tbody tr {
+  transition: all var(--transition-fast);
+}
+
+.figma-table tbody tr:hover td {
+  background: rgba(94, 129, 244, 0.04);
+}
+
+.figma-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+
+/* Text Gradients */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.gradient-text-light {
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Link Styles */
+a {
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+/* Button Reset */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Input Styles */
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #F0F2F5 25%, #E8ECF0 50%, #F0F2F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Status Indicators */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.active {
+  background: var(--secondary-green);
+  box-shadow: 0 0 8px var(--secondary-green);
+  animation: pulse 1.5s ease infinite;
+}
+
+.status-dot.pending {
+  background: var(--secondary-yellow);
+  box-shadow: 0 0 6px var(--secondary-yellow);
+}
+
+.status-dot.inactive {
+  background: var(--secondary-pink);
+}
+
+/* Badge Base */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .figma-card {
+    padding: 16px 20px;
+  }
+  
+  .figma-table th,
+  .figma-table td {
+    padding: 10px 14px;
+  }
+  
+  .hide-on-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .figma-card {
+    padding: 14px 16px;
+  }
+  
+  .figma-table th,
+  .figma-table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ==================== DARK MODE SUPPORT ==================== */
+@media (prefers-color-scheme: dark) {
+  /* Optional: Add dark mode styles if needed */
+  /* body {
+    background: #0A0C10;
+    color: #E5E7EB;
+  } */
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+  .no-print {
+    display: none;
+  }
+  
+  body {
+    background: white;
+    padding: 20px;
+  }
+  
+  .figma-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}

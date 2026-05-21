@@ -1,14 +1,17 @@
+// [COM] Import komponen
 import { useEffect, useRef } from "react";
 import { FaStar, FaMedal, FaTrophy, FaCrown, FaCookie } from "react-icons/fa";
 import PageHeader from "../components/PageHeader";
+import Card from "../components/Card";
+import Avatar from "../components/Avatar";
+import TierBadge from "../components/TierBadge";
 import customers from "../data/customers";
 import orders from "../data/orders";
 
 const PRIMARY = "#5E81F4";
-const PRIMARY_DARK = "#1B51E5";
-const SUCCESS = "#7CE7AC";
 const WARNING = "#F4BE5E";
 
+// [COM] TIER configuration
 const TIER = {
     Gold:   { icon: <FaCrown />,  bg: "rgba(94, 129, 244, 0.1)", color: PRIMARY, border: "rgba(94, 129, 244, 0.3)", next: null,  nextPts: null, bar: PRIMARY },
     Silver: { icon: <FaTrophy />, bg: "rgba(129, 129, 165, 0.1)", color: "#8181A5", border: "rgba(129, 129, 165, 0.3)", next: "Gold",   nextPts: 1000, bar: "#8181A5" },
@@ -16,19 +19,23 @@ const TIER = {
     None:   { icon: <FaStar />,   bg: "rgba(170, 171, 176, 0.1)", color: "#AAABB0", border: "rgba(170, 171, 176, 0.2)", next: "Bronze", nextPts: 100,  bar: "#AAABB0" },
 };
 
+// [COM] TierSummaryCard component
 function TierSummaryCard({ tier, count, icon, bg, color, border }) {
     return (
-        <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: 14, padding: "20px 22px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <span style={{ fontSize: 22, color }}>{icon}</span>
-                <span style={{ fontSize: 32, fontWeight: 800, color }}>{count}</span>
+        <Card padding="20px 22px">
+            <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: 14, padding: "20px 22px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <span style={{ fontSize: 22, color }}>{icon}</span>
+                    <span style={{ fontSize: 32, fontWeight: 800, color }}>{count}</span>
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 15, color }}>{tier} Member</div>
+                <div style={{ fontSize: 11, color: color + "99" }}>{count} pelanggan aktif</div>
             </div>
-            <div style={{ fontWeight: 700, fontSize: 15, color }}>{tier} Member</div>
-            <div style={{ fontSize: 11, color: color + "99" }}>{count} pelanggan aktif</div>
-        </div>
+        </Card>
     );
 }
 
+// [COM] ProgressBar component
 function ProgressBar({ value, max, color }) {
     const pct = max ? Math.min((value / max) * 100, 100) : 100;
     return (
@@ -41,6 +48,7 @@ function ProgressBar({ value, max, color }) {
     );
 }
 
+// [COM] TierDonut chart
 function TierDonut({ data }) {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -117,6 +125,7 @@ export default function Loyalty() {
         <div style={{ background: "#F6F6F6", minHeight: "100vh", paddingBottom: 32 }}>
             <PageHeader title="Loyalty Program" breadcrumb={["Dashboard", "Loyalty"]} />
 
+            {/* [COM] Tier Summary Cards */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                 <TierSummaryCard tier="Gold"   count={gold}      icon={TIER.Gold.icon}   bg={TIER.Gold.bg}   color={TIER.Gold.color}   border={TIER.Gold.border}   />
                 <TierSummaryCard tier="Silver" count={silver}    icon={TIER.Silver.icon} bg={TIER.Silver.bg} color={TIER.Silver.color} border={TIER.Silver.border} />
@@ -125,7 +134,8 @@ export default function Loyalty() {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16, marginBottom: 16 }}>
-                <div style={{ background: "#FFFFFF", borderRadius: 14, padding: "22px 24px", border: "1px solid #F0F0F3" }}>
+                {/* [COM] Distribusi Tier - pakai Card */}
+                <Card padding="22px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Distribusi Tier</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Komposisi member saat ini</div>
                     <div style={{ position: "relative", height: 160, marginBottom: 20, display: "flex", justifyContent: "center" }}>
@@ -154,9 +164,10 @@ export default function Loyalty() {
                             <span style={{ fontWeight: 700, color: "#1A1A1A" }}>{avgPoints}</span>
                         </div>
                     </div>
-                </div>
+                </Card>
 
-                <div style={{ background: "#FFFFFF", borderRadius: 14, padding: "22px 24px", border: "1px solid #F0F0F3" }}>
+                {/* [COM] Poin & Progress Member - pakai Card */}
+                <Card padding="22px 24px">
                     <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Poin & Progress Member</div>
                     <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Progress menuju tier berikutnya + menu favorit</div>
                     <div style={{ overflowX: "auto" }}>
@@ -165,24 +176,47 @@ export default function Loyalty() {
                             <tbody>
                                 {membersWithFavorites.slice(0, 10).map(c => {
                                     const t = TIER[c.loyalty];
-                                    const initials = c.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
                                     return (
                                         <tr key={c.id}>
-                                            <td><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 34, height: 34, borderRadius: "50%", background: t.bg, color: t.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>{initials}</div><span style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name}</span></div></td>
-                                            <td><span style={{ background: t.bg, color: t.color, border: `1px solid ${t.border}`, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700 }}>{c.loyalty}</span></td>
+                                            <td>
+                                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                                    {/* [COM] Pakai Avatar */}
+                                                    <Avatar name={c.name} size="sm" />
+                                                    <span style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name}</span>
+                                                </div>
+                                            </td>
+                                            {/* [COM] Pakai TierBadge */}
+                                            <td><TierBadge tier={c.loyalty} /></td>
                                             <td style={{ fontWeight: 700, color: PRIMARY }}>{c.points}</td>
-                                            <td><span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.1)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}><FaCookie size={10} style={{ color: PRIMARY }} /><span style={{ fontSize: 12, color: PRIMARY }}>{c.favoriteItem}</span></span></td>
-                                            <td>{t.nextPts ? <div><ProgressBar value={c.points} max={t.nextPts} color={t.bar} /><div style={{ fontSize: 10, color: "#8181A5", marginTop: 3 }}>{Math.max(0, t.nextPts - c.points)} poin lagi → {t.next}</div></div> : <span style={{ fontSize: 12, color: PRIMARY, fontWeight: 700 }}>✦ Tier Tertinggi</span>}</td>
+                                            <td>
+                                                <span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.1)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}>
+                                                    <FaCookie size={10} style={{ color: PRIMARY }} />
+                                                    <span style={{ fontSize: 12, color: PRIMARY }}>{c.favoriteItem}</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {t.nextPts ? (
+                                                    <div>
+                                                        <ProgressBar value={c.points} max={t.nextPts} color={t.bar} />
+                                                        <div style={{ fontSize: 10, color: "#8181A5", marginTop: 3 }}>
+                                                            {Math.max(0, t.nextPts - c.points)} poin lagi → {t.next}
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <span style={{ fontSize: 12, color: PRIMARY, fontWeight: 700 }}>✦ Tier Tertinggi</span>
+                                                )}
+                                            </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </Card>
             </div>
 
-            <div style={{ background: "#FFFFFF", borderRadius: 14, padding: "20px 24px", border: "1px solid #F0F0F3" }}>
+            {/* [COM] Syarat Naik Tier - pakai Card */}
+            <Card padding="20px 24px">
                 <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 16 }}>Syarat Naik Tier</div>
                 <div style={{ display: "flex", gap: 0 }}>
                     {[
@@ -197,7 +231,7 @@ export default function Loyalty() {
                         </div>
                     ))}
                 </div>
-            </div>
+            </Card>
         </div>
     );
 }
