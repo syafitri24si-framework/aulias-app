@@ -3,14 +3,15 @@ import { useState } from "react";
 import {
     FaTachometerAlt, FaUsers, FaShoppingCart, FaStar, FaTag,
     FaChartBar, FaSignOutAlt, FaBars, FaTimes, FaBell, FaUser,
-    FaSearch
+    FaSearch, FaUserCog
 } from "react-icons/fa";
 import logoRotte from "../assets/logo_rotte.png";
 
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
 
-const NAV_ITEMS = [
+// Base NAV_ITEMS untuk semua user
+const BASE_NAV_ITEMS = [
     { path: "/", icon: <FaTachometerAlt size={16} />, label: "Dashboard" },
     { path: "/customers", icon: <FaUsers size={16} />, label: "Customers" },
     { path: "/orders", icon: <FaShoppingCart size={16} />, label: "Orders" },
@@ -19,12 +20,43 @@ const NAV_ITEMS = [
     { path: "/reports", icon: <FaChartBar size={16} />, label: "Reports" },
 ];
 
+// NAV_ITEMS untuk admin (tambah Users)
+const ADMIN_NAV_ITEMS = [
+    ...BASE_NAV_ITEMS,
+    { path: "/users", icon: <FaUserCog size={16} />, label: "Users" },
+];
+
 export default function MainLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
 
+    // Ambil data user dari localStorage
+    const userData = localStorage.getItem("user");
+    let userRole = "staff";
+    let userName = "User";
+    let isAdmin = false;
+
+    if (userData) {
+        try {
+            const user = JSON.parse(userData);
+            userRole = user.role || "staff";
+            userName = user.full_name || user.email || "User";
+            isAdmin = userRole === "admin";
+        } catch (e) {
+            console.error("Error parsing user data:", e);
+        }
+    }
+
+    // Pilih NAV_ITEMS berdasarkan role
+    const NAV_ITEMS = isAdmin ? ADMIN_NAV_ITEMS : BASE_NAV_ITEMS;
+
+    // Debug di console
+    console.log("👤 User Role:", userRole);
+    console.log("👑 Is Admin:", isAdmin);
+    console.log("📋 Menu Items:", NAV_ITEMS.map(item => item.label));
+
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         navigate("/login");
     };
 
@@ -109,7 +141,7 @@ export default function MainLayout() {
                                 borderLeft: isActive ? "3px solid #5E81F4" : "3px solid transparent",
                             })}
                         >
-                            <span style={{ fontSize: 16, flexShrink: 0, color: item.isActive ? PRIMARY : "#8181A5" }}>{item.icon}</span>
+                            <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
                             {!collapsed && <span>{item.label}</span>}
                         </NavLink>
                     ))}
@@ -188,8 +220,8 @@ export default function MainLayout() {
                                 <FaUser size={14} style={{ color: "#FFF" }} />
                             </div>
                             <div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1A", lineHeight: 1 }}>Admin Rotte</div>
-                                <div style={{ fontSize: 11, color: PRIMARY }}>Superadmin</div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1A", lineHeight: 1 }}>{userName}</div>
+                                <div style={{ fontSize: 11, color: PRIMARY }}>{userRole}</div>
                             </div>
                         </div>
                     </div>

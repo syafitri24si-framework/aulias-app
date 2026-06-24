@@ -5,6 +5,18 @@ import { ImSpinner2 } from "react-icons/im";
 import { FaEye, FaEyeSlash, FaLock, FaUser } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 
+// ============================================
+// KONFIGURASI SUPABASE
+// ============================================
+const API_URL = "https://mnddhydtawungftggfdd.supabase.co/rest/v1/users"
+const API_KEY = "sb_publishable_RyKL3yTV04oeVEeprjMVGA_PexGUflQ"
+
+const headers = {
+  apikey: API_KEY,
+  Authorization: `Bearer ${API_KEY}`,
+  "Content-Type": "application/json",
+}
+
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
 
@@ -13,7 +25,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [showPass, setShowPass] = useState(false);
-    const [dataForm, setDataForm] = useState({ username: "", password: "" });
+    const [dataForm, setDataForm] = useState({ email: "", password: "" });
 
     const handleChange = (evt) => {
         const { name, value } = evt.target;
@@ -23,38 +35,65 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!dataForm.username || !dataForm.password) {
-            setError("Username dan password wajib diisi");
+        if (!dataForm.email || !dataForm.password) {
+            setError("Email dan password wajib diisi");
             return;
         }
         
         setLoading(true);
         setError("");
         
-        axios.post("https://dummyjson.com/auth/login", {
-            username: dataForm.username,
-            password: dataForm.password,
-        })
-        .then((response) => {
-            if (response.status === 200) {
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data));
+        try {
+            console.log("🔍 Mencoba login dengan:", dataForm.email);
+            
+            // [FIX] Gunakan ilike untuk case-insensitive
+            const response = await axios.get(
+                `${API_URL}?email=ilike.${dataForm.email}&password=eq.${dataForm.password}`,
+                { headers }
+            );
+            
+            console.log("📊 Response data:", response.data);
+            console.log("📊 Jumlah data:", response.data.length);
+            
+            if (response.data.length > 0) {
+                // Login berhasil
+                const userData = response.data[0];
+                console.log("✅ User ditemukan:", userData);
+                localStorage.setItem("user", JSON.stringify(userData));
                 navigate("/");
+            } else {
+                // Cek apakah email ada (tanpa password)
+                try {
+                    const emailCheck = await axios.get(
+                        `${API_URL}?email=ilike.${dataForm.email}`,
+                        { headers }
+                    );
+                    console.log("📧 Cek email:", emailCheck.data);
+                    
+                    if (emailCheck.data.length > 0) {
+                        setError("❌ Password salah!");
+                    } else {
+                        setError("❌ Email tidak terdaftar!");
+                    }
+                } catch (emailErr) {
+                    setError("❌ Email atau password salah");
+                }
             }
-        })
-        .catch((err) => {
-            console.error("Login error:", err);
+        } catch (err) {
+            console.error("❌ Login error:", err);
+            console.error("📋 Error response:", err.response);
+            console.error("📋 Error request:", err.request);
+            
             if (err.response) {
-                setError(err.response.data.message || "Username atau password salah");
+                setError(err.response.data.message || "Email atau password salah");
             } else if (err.request) {
                 setError("Tidak dapat terhubung ke server. Cek koneksi internet Anda.");
             } else {
                 setError(err.message || "Terjadi kesalahan");
             }
-        })
-        .finally(() => {
+        } finally {
             setLoading(false);
-        });
+        }
     };
 
     const errorInfo = error ? (
@@ -81,15 +120,15 @@ export default function Login() {
 
             <form onSubmit={handleSubmit}>
                 <div style={{ marginBottom: 16 }}>
-                    <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 6, fontFamily: "'Lato', sans-serif" }}>Username</label>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 6, fontFamily: "'Lato', sans-serif" }}>Email</label>
                     <div style={{ position: "relative" }}>
                         <FaUser style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
                         <input 
-                            type="text" 
-                            name="username" 
-                            value={dataForm.username} 
+                            type="email" 
+                            name="email" 
+                            value={dataForm.email} 
                             onChange={handleChange}
-                            placeholder="Masukkan username"
+                            placeholder="Masukkan email"
                             style={{
                                 width: "100%",
                                 border: "1px solid #ECECF2",
@@ -171,8 +210,6 @@ export default function Login() {
 
             <div style={{ textAlign: "center", marginTop: 20, fontSize: 13, color: "#AAABB0", fontFamily: "'Lato', sans-serif" }}>
                 Belum punya akun? <Link to="/register" style={{ color: PRIMARY, fontWeight: 700, textDecoration: "none" }}>Daftar sekarang</Link>
-
-
             </div>
 
             <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

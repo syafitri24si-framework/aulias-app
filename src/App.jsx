@@ -4,6 +4,8 @@ import React, { Suspense } from "react";
 import AuthLayout from "./layouts/AuthLayout";
 // [COM] Ganti Loading dengan LoadingSpinner dari components
 import LoadingSpinner from "./components/LoadingSpinner";
+// [COM] Import AuthGuard untuk proteksi route
+import AuthGuard from "./components/AuthGuard";
 
 // [COM] Lazy import untuk semua pages
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
@@ -14,6 +16,8 @@ const Loyalty = React.lazy(() => import("./pages/Loyalty"));
 const Promos = React.lazy(() => import("./pages/Promos"));
 const Reports = React.lazy(() => import("./pages/Reports"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
+// [COM] Import halaman Users (CRUD)
+const Users = React.lazy(() => import("./pages/Users"));
 
 // [COM] Lazy import untuk auth pages
 const Login = React.lazy(() => import("./pages/auth/Login"));
@@ -25,10 +29,16 @@ const MainLayout = React.lazy(() => import("./layouts/MainLayout"));
 
 function App() {
   return (
-    <Suspense fallback={<LoadingSpinner fullScreen />}>
+    <Suspense fallback={<LoadingSpinner fullScreen text="Memuat Aplikasi..." />}>
       <Routes>
-        {/* [COM] Route dengan MainLayout (halaman utama) */}
-        <Route element={<MainLayout />}>
+        {/* [COM] Route dengan MainLayout (halaman utama) - DIPROTEKSI */}
+        <Route
+          element={
+            <AuthGuard>
+              <MainLayout />
+            </AuthGuard>
+          }
+        >
           <Route path="/" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/customers/:id" element={<CustomerDetail />} />
@@ -36,9 +46,11 @@ function App() {
           <Route path="/loyalty" element={<Loyalty />} />
           <Route path="/promos" element={<Promos />} />
           <Route path="/reports" element={<Reports />} />
+          {/* [COM] Route untuk halaman Users (CRUD) */}
+          <Route path="/users" element={<Users />} />
         </Route>
 
-        {/* [COM] Route dengan AuthLayout (halaman login/register) */}
+        {/* [COM] Route dengan AuthLayout (halaman login/register) - TANPA PROTEKSI */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -46,19 +58,37 @@ function App() {
         </Route>
 
         {/* [COM] Route untuk error pages */}
-        <Route 
-          path="/error-400" 
-          element={<NotFound code="400" title="Bad Request" description="Permintaan tidak valid atau format salah." />} 
+        <Route
+          path="/error-400"
+          element={
+            <NotFound
+              code="400"
+              title="Bad Request"
+              description="Permintaan tidak valid atau format salah."
+            />
+          }
         />
-        <Route 
-          path="/error-401" 
-          element={<NotFound code="401" title="Unauthorized" description="Kamu harus login untuk mengakses halaman ini." />} 
+        <Route
+          path="/error-401"
+          element={
+            <NotFound
+              code="401"
+              title="Unauthorized"
+              description="Kamu harus login untuk mengakses halaman ini."
+            />
+          }
         />
-        <Route 
-          path="/error-403" 
-          element={<NotFound code="403" title="Forbidden" description="Kamu tidak memiliki izin untuk mengakses halaman ini." />} 
+        <Route
+          path="/error-403"
+          element={
+            <NotFound
+              code="403"
+              title="Forbidden"
+              description="Kamu tidak memiliki izin untuk mengakses halaman ini."
+            />
+          }
         />
-        
+
         {/* [COM] Route untuk 404 Not Found (harus paling bawah) */}
         <Route path="*" element={<NotFound />} />
       </Routes>

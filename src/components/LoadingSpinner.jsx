@@ -1,7 +1,11 @@
 // [COM] LoadingSpinner component - dipercantik dengan efek modern
 const PRIMARY = "#5E81F4";
 
-export default function LoadingSpinner({ size = 40, fullScreen = false, text = "Memuat..." }) {
+export default function LoadingSpinner({ 
+  size = 40, 
+  fullScreen = false, 
+  text = "Memuat..." 
+}) {
   // Tambahkan style animation ke head jika belum ada
   if (typeof document !== "undefined" && !document.querySelector("#spinner-style")) {
     const style = document.createElement("style");
@@ -19,7 +23,13 @@ export default function LoadingSpinner({ size = 40, fullScreen = false, text = "
   }
 
   const spinner = (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ 
+      textAlign: "center",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center"
+    }}>
       <div style={{
         width: size,
         height: size,
@@ -33,7 +43,8 @@ export default function LoadingSpinner({ size = 40, fullScreen = false, text = "
           fontSize: "13px", 
           color: PRIMARY, 
           fontWeight: 500,
-          animation: "pulse 1.5s ease infinite"
+          animation: "pulse 1.5s ease infinite",
+          fontFamily: "'Lato', sans-serif"
         }}>
           {text}
         </div>
@@ -41,6 +52,7 @@ export default function LoadingSpinner({ size = 40, fullScreen = false, text = "
     </div>
   );
 
+  // Jika fullScreen, tampilkan di tengah layar penuh
   if (fullScreen) {
     return (
       <div style={{ 
@@ -50,7 +62,13 @@ export default function LoadingSpinner({ size = 40, fullScreen = false, text = "
         alignItems: "center", 
         minHeight: "100vh", 
         background: "linear-gradient(135deg, #F6F6F6, #FFFFFF)",
-        gap: "16px"
+        gap: "16px",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999
       }}>
         {spinner}
       </div>
