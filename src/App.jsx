@@ -2,9 +2,7 @@ import "./index.css";
 import { Route, Routes } from "react-router-dom";
 import React, { Suspense } from "react";
 import AuthLayout from "./layouts/AuthLayout";
-// [COM] Ganti Loading dengan LoadingSpinner dari components
 import LoadingSpinner from "./components/LoadingSpinner";
-// [COM] Import AuthGuard untuk proteksi route
 import AuthGuard from "./components/AuthGuard";
 
 // [COM] Lazy import untuk semua pages
@@ -16,13 +14,15 @@ const Loyalty = React.lazy(() => import("./pages/Loyalty"));
 const Promos = React.lazy(() => import("./pages/Promos"));
 const Reports = React.lazy(() => import("./pages/Reports"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
-// [COM] Import halaman Users (CRUD)
 const Users = React.lazy(() => import("./pages/Users"));
 
 // [COM] Lazy import untuk auth pages
 const Login = React.lazy(() => import("./pages/auth/Login"));
 const Register = React.lazy(() => import("./pages/auth/Register"));
 const Forgot = React.lazy(() => import("./pages/auth/Forgot"));
+
+// ⭐ TAMBAHKAN INI!
+const LandingPage = React.lazy(() => import("./pages/LandingPage"));
 
 // [COM] Lazy import untuk layouts
 const MainLayout = React.lazy(() => import("./layouts/MainLayout"));
@@ -31,7 +31,11 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner fullScreen text="Memuat Aplikasi..." />}>
       <Routes>
-        {/* [COM] Route dengan MainLayout (halaman utama) - DIPROTEKSI */}
+        {/* ==================== ROUTE PUBLIK ==================== */}
+        {/* ⭐ Landing Page - bisa diakses tanpa login */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* ==================== ROUTE YANG BUTUH LOGIN ==================== */}
         <Route
           element={
             <AuthGuard>
@@ -39,25 +43,24 @@ function App() {
             </AuthGuard>
           }
         >
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/customers/:id" element={<CustomerDetail />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/loyalty" element={<Loyalty />} />
           <Route path="/promos" element={<Promos />} />
           <Route path="/reports" element={<Reports />} />
-          {/* [COM] Route untuk halaman Users (CRUD) */}
           <Route path="/users" element={<Users />} />
         </Route>
 
-        {/* [COM] Route dengan AuthLayout (halaman login/register) - TANPA PROTEKSI */}
+        {/* ==================== ROUTE AUTH (LOGIN/REGISTER) ==================== */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot" element={<Forgot />} />
         </Route>
 
-        {/* [COM] Route untuk error pages */}
+        {/* ==================== ROUTE ERROR ==================== */}
         <Route
           path="/error-400"
           element={

@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* ==================== FONTS ==================== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @font-face {
   font-family: "Inter";
   src: url("/fonts/Inter-Regular.ttf");
@@ -11,10 +15,33 @@
   font-weight: bold;
 }
 
-body {
-  font-family: "Inter", sans-serif;
+/* ==================== BASE STYLES ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "Inter", "Plus Jakarta Sans", sans-serif;
+  background: #FFFBF8;
+  color: #3A2A24;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ==================== CUSTOM COLORS ==================== */
 .bg-gold {
   background-color: #D4AF37;
 }
@@ -23,4 +50,60 @@ body {
 }
 .border-gold {
   border-color: #D4AF37;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5E6D8;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8637A;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d9556d;
+}
+
+/* ==================== UTILITY ==================== */
+.gradient-text {
+  background: linear-gradient(135deg, #E8637A, #d9556d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Smooth transition for all interactive elements */
+a, button {
+  transition: all 0.2s ease;
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid #E8637A;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
