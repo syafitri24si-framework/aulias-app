@@ -7,9 +7,17 @@ export default function AuthGuard({ children }) {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
+    const isDevMode = import.meta.env.DEV;
+
+    // Saat mode development, biarkan akses langsung ke halaman utama
+    if (isDevMode) {
+      setIsChecking(false);
+      return;
+    }
+
     // Cek apakah user sudah login (ada data di localStorage)
     const user = localStorage.getItem("user");
-    
+
     if (!user) {
       // Jika belum login, redirect ke halaman login
       navigate("/login");
@@ -28,7 +36,7 @@ export default function AuthGuard({ children }) {
         navigate("/login");
       }
     }
-    
+
     setIsChecking(false);
   }, [navigate]);
 
