@@ -12,7 +12,7 @@ const PRIMARY_DARK = "#1B51E5";
 
 // Base NAV_ITEMS untuk semua user
 const BASE_NAV_ITEMS = [
-    { path: "/", icon: <FaTachometerAlt size={16} />, label: "Dashboard" },
+    { path: "/dashboard", icon: <FaTachometerAlt size={16} />, label: "Dashboard" },
     { path: "/customers", icon: <FaUsers size={16} />, label: "Customers" },
     { path: "/orders", icon: <FaShoppingCart size={16} />, label: "Orders" },
     { path: "/loyalty", icon: <FaStar size={16} />, label: "Loyalty" },
@@ -128,7 +128,7 @@ export default function MainLayout() {
                         <NavLink
                             key={item.path}
                             to={item.path}
-                            end={item.path === "/"}
+                            end={item.path === "/dashboard"}
                             style={({ isActive }) => ({
                                 display: "flex", alignItems: "center", gap: 12,
                                 padding: collapsed ? "12px 0" : "10px 14px",

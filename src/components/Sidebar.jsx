@@ -77,7 +77,7 @@ export default function Sidebar() {
 
                 <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                     {[
-                        { to: "/", icon: <FaHome size={14} />, label: "Dashboard" },
+                        { to: "/dashboard", icon: <FaHome size={14} />, label: "Dashboard" },
                         { to: "/orders", icon: <FaShoppingCart size={14} />, label: "Orders" },
                         { to: "/customers", icon: <FaUsers size={14} />, label: "Customers" },
                         { to: "/loyalty", icon: <FaGem size={14} />, label: "Loyalty" },
@@ -89,7 +89,7 @@ export default function Sidebar() {
                         <NavLink
                             key={item.to}
                             to={item.to}
-                            end={item.to === "/"}
+                            end={item.to === "/dashboard"}
                             style={({ isActive }) => ({
                                 display: "flex",
                                 alignItems: "center",
