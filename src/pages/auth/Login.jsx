@@ -60,7 +60,7 @@ export default function Login() {
                 const userData = response.data[0];
                 console.log("✅ User ditemukan:", userData);
                 localStorage.setItem("user", JSON.stringify(userData));
-                navigate("/");
+                navigate("/dashboard");
             } else {
                 // Cek apakah email ada (tanpa password)
                 try {
