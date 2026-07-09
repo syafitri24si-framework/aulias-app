@@ -1,3 +1,4 @@
+// src/pages/Users.jsx - TANPA ROLE MANAGER!
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
@@ -52,13 +53,11 @@ export default function Users() {
         loadUsers();
     }, []);
 
-    // Handle perubahan input form
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    // Handle submit tambah/update
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -67,7 +66,6 @@ export default function Users() {
 
         try {
             if (isEditing) {
-                // UPDATE user
                 await axios.patch(
                     `${API_URL}?id=eq.${editId}`,
                     formData,
@@ -77,7 +75,6 @@ export default function Users() {
                 setIsEditing(false);
                 setEditId(null);
             } else {
-                // Cek email sudah terdaftar
                 const checkResponse = await axios.get(
                     `${API_URL}?email=eq.${formData.email}`,
                     { headers }
@@ -89,12 +86,10 @@ export default function Users() {
                     return;
                 }
 
-                // CREATE user baru
                 await axios.post(API_URL, formData, { headers });
                 setSuccess("User berhasil ditambahkan!");
             }
 
-            // Reset form
             setFormData({
                 email: "",
                 password: "",
@@ -102,10 +97,7 @@ export default function Users() {
                 role: "staff"
             });
 
-            // Refresh data
             loadUsers();
-
-            // Hilangkan pesan setelah 3 detik
             setTimeout(() => setSuccess(""), 3000);
 
         } catch (err) {
@@ -116,7 +108,6 @@ export default function Users() {
         }
     };
 
-    // Handle delete user
     const handleDelete = async (id) => {
         if (!window.confirm("Yakin ingin menghapus user ini?")) return;
 
@@ -134,7 +125,6 @@ export default function Users() {
         }
     };
 
-    // Handle edit - isi form dengan data user
     const handleEdit = (user) => {
         setIsEditing(true);
         setEditId(user.id);
@@ -147,7 +137,6 @@ export default function Users() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // Handle cancel edit
     const handleCancelEdit = () => {
         setIsEditing(false);
         setEditId(null);
@@ -159,7 +148,6 @@ export default function Users() {
         });
     };
 
-    // Format date
     const formatDate = (date) => {
         if (!date) return "-";
         return new Date(date).toLocaleDateString("id-ID", {
@@ -169,11 +157,9 @@ export default function Users() {
         });
     };
 
-    // Get role badge style
     const getRoleStyle = (role) => {
         const styles = {
             admin: { bg: "#EBF4FF", color: "#1B51E5" },
-            manager: { bg: "#F0FDF4", color: "#15803D" },
             staff: { bg: "#F3F4F6", color: "#6B7280" }
         };
         return styles[role] || styles.staff;
@@ -181,7 +167,6 @@ export default function Users() {
 
     return (
         <div>
-            {/* Header */}
             <div style={{ marginBottom: 24 }}>
                 <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "#1A1A1A", fontFamily: "'Lato', sans-serif" }}>
                     Manajemen User
@@ -191,7 +176,6 @@ export default function Users() {
                 </p>
             </div>
 
-            {/* Error & Success */}
             {error && (
                 <div style={{ 
                     display: "flex", 
@@ -228,7 +212,7 @@ export default function Users() {
                 </div>
             )}
 
-            {/* Form Tambah/Edit User */}
+            {/* Form */}
             <div style={{ 
                 background: "white", 
                 borderRadius: 16, 
@@ -312,8 +296,8 @@ export default function Users() {
                                 background: loading ? "#F5F5F5" : "white"
                             }}
                         >
+                            {/* 🔥 HANYA staff & admin! */}
                             <option value="staff">Staff</option>
-                            <option value="manager">Manager</option>
                             <option value="admin">Admin</option>
                         </select>
                     </div>
@@ -366,7 +350,7 @@ export default function Users() {
                 </form>
             </div>
 
-            {/* Tabel Data User */}
+            {/* Tabel */}
             <div style={{ 
                 background: "white", 
                 borderRadius: 16, 

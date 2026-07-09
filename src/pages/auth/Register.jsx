@@ -1,20 +1,20 @@
+// src/pages/auth/Register.jsx - TANPA LOGO DI ATAS!
 import { useState } from "react";
 import axios from "axios";
-import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser, FaCheckCircle } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaEnvelope, FaLock, FaUser, FaPhone, FaCheckCircle } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 
 // ============================================
 // KONFIGURASI SUPABASE
-// Ganti dengan milik Anda
 // ============================================
-const API_URL = "https://mnddhydtawungftggfdd.supabase.co/rest/v1/users"
-const API_KEY = "sb_publishable_RyKL3yTV04oeVEeprjMVGA_PexGUflQ"
+const API_URL = "https://mnddhydtawungftggfdd.supabase.co/rest/v1";
+const API_KEY = "sb_publishable_RyKL3yTV04oeVEeprjMVGA_PexGUflQ";
 
 const headers = {
-  apikey: API_KEY,
-  Authorization: `Bearer ${API_KEY}`,
-  "Content-Type": "application/json",
-}
+    apikey: API_KEY,
+    Authorization: `Bearer ${API_KEY}`,
+    "Content-Type": "application/json",
+};
 
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
@@ -24,15 +24,22 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+    const [form, setForm] = useState({ 
+        full_name: "", 
+        email: "", 
+        no_handphone: "",
+        password: "", 
+        confirm: "" 
+    });
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState("");
     const [apiError, setApiError] = useState("");
 
     const validate = () => {
         const e = {};
-        if (!form.name) e.name = "Nama wajib diisi";
+        if (!form.full_name) e.full_name = "Nama wajib diisi";
         if (!form.email || !/\S+@\S+\.\S+/.test(form.email)) e.email = "Email tidak valid";
+        if (!form.no_handphone || form.no_handphone.length < 10) e.no_handphone = "Nomor HP minimal 10 digit";
         if (!form.password || form.password.length < 6) e.password = "Password minimal 6 karakter";
         if (form.password !== form.confirm) e.confirm = "Password tidak cocok";
         return e;
@@ -53,47 +60,67 @@ export default function Register() {
         setErrors({});
         
         try {
-            // Cek apakah email sudah terdaftar
-            const checkResponse = await axios.get(
-                `${API_URL}?email=ilike.${form.email}`,
+            const emailCheck = await axios.get(
+                `${API_URL}/users?email=ilike.${form.email}`,
                 { headers }
             );
             
-            if (checkResponse.data.length > 0) {
-                setApiError("Email sudah terdaftar! Gunakan email lain.");
+            if (emailCheck.data.length > 0) {
+                setApiError("Email sudah terdaftar! Silakan login.");
+                setLoading(false);
+                return;
+            }
+
+            const phoneCheck = await axios.get(
+                `${API_URL}/customers?no_handphone=eq.${form.no_handphone}`,
+                { headers }
+            );
+            
+            if (phoneCheck.data.length > 0) {
+                setApiError("Nomor HP sudah terdaftar! Silakan login.");
                 setLoading(false);
                 return;
             }
             
-            // Buat user baru di Supabase
+            const customerData = {
+                nama_lengkap: form.full_name,
+                email: form.email,
+                no_handphone: form.no_handphone,
+                loyalty_tier: "Bronze",
+                points: 0,
+                total_belanja: 0,
+                join_date: new Date().toISOString().split("T")[0]
+            };
+
+            const customerRes = await axios.post(
+                `${API_URL}/customers`,
+                customerData,
+                { headers }
+            );
+
+            const customer = customerRes.data[0] || customerRes.data;
+
             const userData = {
                 email: form.email,
                 password: form.password,
-                full_name: form.name,
-                role: "staff"
+                full_name: form.full_name,
+                role: "customer",
+                no_handphone: form.no_handphone,
+                id_customer: customer.id_customer
             };
+
+            await axios.post(`${API_URL}/users`, userData, { headers });
             
-            await axios.post(API_URL, userData, { headers });
+            setSuccess("✅ Pendaftaran berhasil! Silakan login.");
+            setForm({ full_name: "", email: "", no_handphone: "", password: "", confirm: "" });
             
-            setSuccess("Pendaftaran berhasil! Silakan login.");
-            
-            // Reset form
-            setForm({ name: "", email: "", password: "", confirm: "" });
-            
-            // Redirect ke login setelah 2 detik
             setTimeout(() => {
                 navigate("/login");
             }, 2000);
             
         } catch (err) {
             console.error("Register error:", err);
-            if (err.response) {
-                setApiError(err.response.data.message || "Terjadi kesalahan saat pendaftaran");
-            } else if (err.request) {
-                setApiError("Tidak dapat terhubung ke server. Cek koneksi internet Anda.");
-            } else {
-                setApiError(err.message || "Terjadi kesalahan");
-            }
+            setApiError(err.response?.data?.message || "Terjadi kesalahan saat pendaftaran");
         } finally {
             setLoading(false);
         }
@@ -107,7 +134,7 @@ export default function Register() {
         width: "100%",
         border: `1px solid ${hasError ? "#FF808B" : isSuccess ? "#7CE7AC" : "#ECECF2"}`,
         borderRadius: 10,
-        padding: "11px 14px 11px 36px",
+        padding: "11px 14px 11px 40px",
         fontSize: 14,
         outline: "none",
         boxSizing: "border-box",
@@ -120,12 +147,16 @@ export default function Register() {
 
     return (
         <div>
+            {/* ===== HEADER - TANPA LOGO! ===== */}
             <div style={{ textAlign: "center", marginBottom: 24 }}>
-                <h2 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#1A1A1A", fontFamily: "'Lato', sans-serif" }}>Buat Akun Baru</h2>
-                <p style={{ margin: "8px 0 0", fontSize: 14, color: PRIMARY, fontFamily: "'Lato', sans-serif" }}>Daftarkan diri Anda ke Rotte Bakery CRM</p>
+                <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#1A1A1A", fontFamily: "'Lato', sans-serif" }}>
+                    Daftar Member
+                </h2>
+                <p style={{ margin: "8px 0 0", fontSize: 14, color: PRIMARY, fontFamily: "'Lato', sans-serif" }}>
+                    Daftar untuk menikmati program loyalitas Rotte Rewards
+                </p>
             </div>
 
-            {/* Loading Info */}
             {loading && (
                 <div style={{ 
                     display: "flex", 
@@ -144,7 +175,6 @@ export default function Register() {
                 </div>
             )}
 
-            {/* Error dari API */}
             {apiError && (
                 <div style={{ 
                     display: "flex", 
@@ -163,7 +193,6 @@ export default function Register() {
                 </div>
             )}
 
-            {/* Success */}
             {success && (
                 <div style={{ 
                     display: "flex", 
@@ -183,32 +212,32 @@ export default function Register() {
             )}
 
             <form onSubmit={handleSubmit}>
-                {/* Nama Lengkap */}
                 <div style={{ marginBottom: 14 }}>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 5, fontFamily: "'Lato', sans-serif" }}>Nama Lengkap</label>
                     <div style={{ position: "relative" }}>
-                        <FaUser style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
+                        <FaUser style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
                         <input 
                             type="text" 
-                            placeholder="Nama Anda" 
-                            value={form.name}
-                            onChange={e => setForm({ ...form, name: e.target.value })}
+                            name="full_name"
+                            placeholder="Nama lengkap" 
+                            value={form.full_name}
+                            onChange={e => setForm({ ...form, full_name: e.target.value })}
                             disabled={loading}
-                            style={inputStyle(!!errors.name)}
+                            style={inputStyle(!!errors.full_name)}
                             onFocus={e => e.target.style.borderColor = PRIMARY}
-                            onBlur={e => e.target.style.borderColor = errors.name ? "#FF808B" : "#ECECF2"}
+                            onBlur={e => e.target.style.borderColor = errors.full_name ? "#FF808B" : "#ECECF2"}
                         />
                     </div>
-                    {errors.name && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#FF808B", fontFamily: "'Lato', sans-serif" }}>{errors.name}</p>}
+                    {errors.full_name && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#FF808B", fontFamily: "'Lato', sans-serif" }}>{errors.full_name}</p>}
                 </div>
 
-                {/* Email */}
                 <div style={{ marginBottom: 14 }}>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 5, fontFamily: "'Lato', sans-serif" }}>Email</label>
                     <div style={{ position: "relative" }}>
-                        <FaEnvelope style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
+                        <FaEnvelope style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
                         <input 
                             type="email" 
+                            name="email"
                             placeholder="email@example.com" 
                             value={form.email}
                             onChange={e => setForm({ ...form, email: e.target.value })}
@@ -221,11 +250,29 @@ export default function Register() {
                     {errors.email && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#FF808B", fontFamily: "'Lato', sans-serif" }}>{errors.email}</p>}
                 </div>
 
-                {/* Password */}
+                <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 5, fontFamily: "'Lato', sans-serif" }}>Nomor HP</label>
+                    <div style={{ position: "relative" }}>
+                        <FaPhone style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
+                        <input 
+                            type="text" 
+                            name="no_handphone"
+                            placeholder="08xx-xxxx-xxxx" 
+                            value={form.no_handphone}
+                            onChange={e => setForm({ ...form, no_handphone: e.target.value })}
+                            disabled={loading}
+                            style={inputStyle(!!errors.no_handphone)}
+                            onFocus={e => e.target.style.borderColor = PRIMARY}
+                            onBlur={e => e.target.style.borderColor = errors.no_handphone ? "#FF808B" : "#ECECF2"}
+                        />
+                    </div>
+                    {errors.no_handphone && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#FF808B", fontFamily: "'Lato', sans-serif" }}>{errors.no_handphone}</p>}
+                </div>
+
                 <div style={{ marginBottom: 8 }}>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 5, fontFamily: "'Lato', sans-serif" }}>Password</label>
                     <div style={{ position: "relative" }}>
-                        <FaLock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
+                        <FaLock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
                         <input 
                             type={showPass ? "text" : "password"} 
                             placeholder="Min. 6 karakter" 
@@ -241,11 +288,10 @@ export default function Register() {
                             onClick={() => setShowPass(!showPass)}
                             disabled={loading}
                             style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "#AAABB0", display: "flex" }}>
-                            {showPass ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                            {showPass ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
                         </button>
                     </div>
                     
-                    {/* Password Strength Indicator */}
                     {form.password.length > 0 && (
                         <div style={{ display: "flex", gap: 4, marginTop: 8, alignItems: "center" }}>
                             {[1, 2, 3].map(i => (
@@ -257,11 +303,10 @@ export default function Register() {
                     {errors.password && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#FF808B", fontFamily: "'Lato', sans-serif" }}>{errors.password}</p>}
                 </div>
 
-                {/* Konfirmasi Password */}
                 <div style={{ marginBottom: 20 }}>
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 5, fontFamily: "'Lato', sans-serif" }}>Konfirmasi Password</label>
                     <div style={{ position: "relative" }}>
-                        <FaLock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
+                        <FaLock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
                         <input 
                             type={showConfirm ? "text" : "password"} 
                             placeholder="Ulangi password" 
@@ -278,8 +323,8 @@ export default function Register() {
                             disabled={loading}
                             style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: loading ? "not-allowed" : "pointer", color: "#AAABB0", display: "flex" }}>
                             {form.confirm && form.confirm === form.password
-                                ? <FaCheckCircle size={14} style={{ color: "#7CE7AC" }} />
-                                : showConfirm ? <FaEyeSlash size={14} /> : <FaEye size={14} />
+                                ? <FaCheckCircle size={16} style={{ color: "#7CE7AC" }} />
+                                : showConfirm ? <FaEyeSlash size={16} /> : <FaEye size={16} />
                             }
                         </button>
                     </div>
@@ -291,19 +336,30 @@ export default function Register() {
                     disabled={loading}
                     style={{
                         width: "100%",
-                        background: loading ? "#AAABB0" : PRIMARY,
+                        background: loading ? "#AAABB0" : `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY_DARK})`,
                         color: "#FFFFFF",
                         border: "none",
                         borderRadius: 10,
-                        padding: 12,
-                        fontSize: 14,
+                        padding: 13,
+                        fontSize: 15,
                         fontWeight: 700,
                         cursor: loading ? "not-allowed" : "pointer",
-                        transition: "all 0.2s",
-                        fontFamily: "'Lato', sans-serif"
+                        transition: "all 0.3s",
+                        fontFamily: "'Lato', sans-serif",
+                        boxShadow: loading ? "none" : `0 4px 16px ${PRIMARY}40`
                     }}
-                    onMouseEnter={e => { if (!loading) e.currentTarget.style.background = PRIMARY_DARK; }}
-                    onMouseLeave={e => { if (!loading) e.currentTarget.style.background = PRIMARY; }}
+                    onMouseEnter={e => { 
+                        if (!loading) {
+                            e.currentTarget.style.transform = "translateY(-2px)";
+                            e.currentTarget.style.boxShadow = `0 8px 24px ${PRIMARY}60`;
+                        }
+                    }}
+                    onMouseLeave={e => { 
+                        if (!loading) {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = `0 4px 16px ${PRIMARY}40`;
+                        }
+                    }}
                 >
                     {loading ? "Memproses..." : "Daftar Sekarang"}
                 </button>
@@ -311,6 +367,17 @@ export default function Register() {
 
             <div style={{ textAlign: "center", marginTop: 20, fontSize: 13, color: "#AAABB0", fontFamily: "'Lato', sans-serif" }}>
                 Sudah punya akun? <Link to="/login" style={{ color: PRIMARY, fontWeight: 700, textDecoration: "none" }}>Masuk di sini</Link>
+            </div>
+
+            <div style={{ 
+                textAlign: "center", 
+                marginTop: 16,
+                paddingTop: 14,
+                borderTop: "1px solid #F0F0F3",
+                fontSize: 11,
+                color: "#AAABB0"
+            }}>
+                🔒 Dengan mendaftar, Anda menyetujui Syarat & Ketentuan Rotte
             </div>
 
             <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>

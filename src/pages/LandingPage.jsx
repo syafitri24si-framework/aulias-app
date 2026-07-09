@@ -1,1552 +1,1057 @@
+// src/pages/LandingPage.jsx - PROFESIONAL & CLEAN! (FIXED)
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { 
+    FaUsers, FaClipboardList, FaTrophy, FaChartLine, 
+    FaTags, FaUserPlus, FaArrowRight, FaInstagram, 
+    FaTiktok, FaWhatsapp, FaChevronLeft, FaChevronRight,
+    FaQuoteLeft, FaShieldAlt, FaBuilding, FaCoffee
+} from 'react-icons/fa';
+import logoRotte from '../assets/logo_rotte.png';
 
-// ============================================================
-// PRD 1: CRM TOKO ROTI
-// ============================================================
+// ================================================================
+// WARNA
+// ================================================================
+const PRIMARY = "#5E81F4";
+const PRIMARY_DARK = "#1B51E5";
+const GOLD = "#D4AF37";
+const DARK = "#1A1A2E";
+const TEXT = "#464A5F";
+const TEXT_SECONDARY = "#64748B"; // ← SUDAH DITAMBAHKAN!
+const LIGHT_BG = "#F8F9FC";
 
-// ==================== DATA ====================
+// ================================================================
+// DATA
+// ================================================================
+
 const features = [
-  {
-    title: 'Customer Management',
-    description: 'Kelola data pelanggan secara rapi dan mudah dipantau untuk membangun hubungan yang lebih baik.',
-    icon: '👥',
-  },
-  {
-    title: 'Order Tracking',
-    description: 'Pantau setiap pesanan dengan alur yang jelas sehingga operasional toko tetap teratur.',
-    icon: '📦',
-  },
-  {
-    title: 'Loyalty & Promo',
-    description: 'Atur program loyalti dan promo secara praktis untuk menjaga pelanggan tetap kembali.',
-    icon: '🎯',
-  },
-  {
-    title: 'Reporting Ringkas',
-    description: 'Dapatkan gambaran performa bisnis secara cepat lewat laporan yang sederhana dan informatif.',
-    icon: '📊',
-  },
+    {
+        title: 'Manajemen Pelanggan',
+        description: 'Kelola data pelanggan, riwayat transaksi, dan preferensi member dengan mudah dan terstruktur.',
+        icon: <FaUsers size={22} />
+    },
+    {
+        title: 'Transaksi Kasir',
+        description: 'Proses pembayaran cepat dengan sistem poin dan tier loyalty yang terintegrasi penuh.',
+        icon: <FaClipboardList size={22} />
+    },
+    {
+        title: 'Program Loyalitas',
+        description: 'Sistem tier Bronze, Silver, dan Gold dengan poin reward untuk setiap pembelian pelanggan.',
+        icon: <FaTrophy size={22} />
+    },
+    {
+        title: 'Laporan & Analitik',
+        description: 'Dashboard interaktif dengan grafik penjualan, top produk, dan laporan churn pelanggan.',
+        icon: <FaChartLine size={22} />
+    },
+    {
+        title: 'Manajemen Promo',
+        description: 'Buat dan kelola promo, diskon, bundling dengan target segmen pelanggan tertentu.',
+        icon: <FaTags size={22} />
+    },
+    {
+        title: 'Self-Service Customer',
+        description: 'Pelanggan dapat login untuk melihat profil, poin, dan riwayat transaksi mereka sendiri.',
+        icon: <FaUserPlus size={22} />
+    }
 ];
-
-const benefits = [
-  'Hemat waktu karena semua data berada di satu tempat',
-  'Mudah menjaga pelanggan lewat riwayat dan interaksi yang terorganisir',
-  'Cepat mengambil keputusan dengan informasi yang lebih jelas',
-];
-
-// ============================================================
-// PRD 2: TESTIMONI + PAKET HARGA
-// ============================================================
 
 const testimonials = [
-  {
-    id: 1,
-    name: 'Aisyah Putri',
-    role: 'Pemilik "Manis Bakery"',
-    quote: 'Rotte benar-benar mengubah cara saya mengelola toko. Sekarang semua data pelanggan rapi dan pesanan lebih terpantau!',
-    rating: 5,
-    image: '👩‍🍳',
-  },
-  {
-    id: 2,
-    name: 'Rama Wijaya',
-    role: 'Pemilik "Roti Raya"',
-    quote: 'Fitur loyalitas sangat membantu mempertahankan pelanggan. Program promo jadi lebih mudah dijalankan.',
-    rating: 5,
-    image: '👨‍🍳',
-  },
-  {
-    id: 3,
-    name: 'Dewi Lestari',
-    role: 'Pemilik "Cake & Co"',
-    quote: 'Laporan ringkas membantu saya mengambil keputusan bisnis dengan cepat. Sangat direkomendasikan!',
-    rating: 4,
-    image: '👩‍🍳',
-  },
+    {
+        id: 1,
+        name: 'Aisyah Putri',
+        role: 'Pemilik Manis Bakery',
+        quote: 'Rotte benar-benar mengubah cara saya mengelola toko. Semua data pelanggan rapi dan pesanan lebih terpantau.'
+    },
+    {
+        id: 2,
+        name: 'Rama Wijaya',
+        role: 'Pemilik Roti Raya',
+        quote: 'Fitur loyalitas sangat membantu mempertahankan pelanggan. Program promo jadi lebih mudah dijalankan.'
+    },
+    {
+        id: 3,
+        name: 'Dewi Lestari',
+        role: 'Pemilik Cake & Co',
+        quote: 'Laporan ringkas membantu saya mengambil keputusan bisnis dengan cepat. Sangat direkomendasikan.'
+    }
 ];
 
-const pricingPlans = [
-  {
-    id: 1,
-    name: 'Starter',
-    price: 'Rp 99.000',
-    period: '/bulan',
-    description: 'Cocok untuk toko roti pemula',
-    features: [
-      'Manajemen pelanggan dasar',
-      'Pencatatan pesanan',
-      'Laporan sederhana',
-      '1 pengguna',
-    ],
-    isPopular: false,
-    cta: 'Mulai Gratis',
-  },
-  {
-    id: 2,
-    name: 'Pro',
-    price: 'Rp 249.000',
-    period: '/bulan',
-    description: 'Untuk toko roti yang berkembang',
-    features: [
-      'Semua fitur Starter',
-      'Program loyalitas',
-      'Manajemen promo',
-      'Laporan lengkap',
-      '5 pengguna',
-      'Dukungan prioritas',
-    ],
-    isPopular: true,
-    cta: 'Coba Pro',
-  },
-  {
-    id: 3,
-    name: 'Enterprise',
-    price: 'Rp 499.000',
-    period: '/bulan',
-    description: 'Untuk bisnis roti skala besar',
-    features: [
-      'Semua fitur Pro',
-      'Multi cabang',
-      'Integrasi API',
-      'Analitik lanjutan',
-      'Pengguna tidak terbatas',
-      'Dukungan 24/7',
-    ],
-    isPopular: false,
-    cta: 'Hubungi Kami',
-  },
+const promos = [
+    {
+        id: 1,
+        title: 'Diskon 20% untuk Member Gold',
+        description: 'Khusus pelanggan tier Gold, berlaku untuk semua produk roti dan kue.',
+        validUntil: '30 Juni 2026',
+        discount: '20%'
+    },
+    {
+        id: 2,
+        title: 'Beli 2 Roti Coklat Gratis 1',
+        description: 'Promo bundling untuk semua varian roti coklat, minimal pembelian 2 pcs.',
+        validUntil: '15 Juli 2026',
+        discount: 'Buy 2 Get 1'
+    },
+    {
+        id: 3,
+        title: 'Free Delivery min. Rp 50.000',
+        description: 'Gratis ongkir untuk area Kota dengan minimal belanja Rp 50.000.',
+        validUntil: '31 Juli 2026',
+        discount: 'Free Ongkir'
+    }
 ];
 
-// ============================================================
-// PRD 3: GALERI PRODUK
-// ============================================================
-
-const galleryItems = [
-  {
-    id: 1,
-    title: 'Roti Coklat',
-    description: 'Roti lembut dengan isian coklat premium',
-    image: '🍞',
-    category: 'Roti',
-    price: 'Rp 15.000',
-  },
-  {
-    id: 2,
-    title: 'Croissant',
-    description: 'Pastry renyah berlapis mentega',
-    image: '🥐',
-    category: 'Pastry',
-    price: 'Rp 18.000',
-  },
-  {
-    id: 3,
-    title: 'Donat Gula',
-    description: 'Donat empuk dengan taburan gula halus',
-    image: '🍩',
-    category: 'Donat',
-    price: 'Rp 12.000',
-  },
-  {
-    id: 4,
-    title: 'Roti Tawar',
-    description: 'Roti tawar lembut untuk sarapan',
-    image: '🍞',
-    category: 'Roti',
-    price: 'Rp 28.000',
-  },
-  {
-    id: 5,
-    title: 'Kue Bolu',
-    description: 'Kue bolu lembut dengan topping keju',
-    image: '🎂',
-    category: 'Kue',
-    price: 'Rp 35.000',
-  },
-  {
-    id: 6,
-    title: 'Pie Apel',
-    description: 'Pie apel homemade dengan kulit renyah',
-    image: '🥧',
-    category: 'Kue',
-    price: 'Rp 42.000',
-  },
-  {
-    id: 7,
-    title: 'Roti Keju',
-    description: 'Roti gurih dengan topping keju mozzarella',
-    image: '🧀',
-    category: 'Roti',
-    price: 'Rp 20.000',
-  },
-  {
-    id: 8,
-    title: 'Donat Coklat',
-    description: 'Donat dengan glaze coklat premium',
-    image: '🍩',
-    category: 'Donat',
-    price: 'Rp 14.000',
-  },
-];
-
-// ============================================================
+// ================================================================
 // COMPONENTS
-// ============================================================
+// ================================================================
 
-// ==================== HEADER ====================
-const Header = () => (
-  <header style={{
-    position: 'sticky',
-    top: 0,
-    zIndex: 50,
-    background: 'rgba(255, 255, 255, 0.85)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid #F5E6D8',
-    padding: '16px 24px',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}>
-      <Link to="/" style={{
-        fontSize: 20,
-        fontWeight: 800,
-        color: '#3A2A24',
-        textDecoration: 'none',
-        letterSpacing: '0.2em',
-      }}>
-        ROTTE
-      </Link>
-      
-      <nav style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 32,
-      }}>
-        <a href="#features" style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Fitur
-        </a>
-        <a href="#testimonials" style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Testimoni
-        </a>
-        <a href="#pricing" style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Harga
-        </a>
-        <a href="#gallery" style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Galeri
-        </a>
-        <a href="#contact" style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Hubungi
-        </a>
-        <Link to="/login" style={{
-          background: '#E8637A',
-          color: '#FFFFFF',
-          padding: '10px 24px',
-          borderRadius: 9999,
-          fontSize: 14,
-          fontWeight: 700,
-          textDecoration: 'none',
-          transition: 'all 0.2s',
-          boxShadow: '0 4px 16px rgba(232, 99, 122, 0.3)',
-        }}
-        onMouseEnter={e => {
-          e.target.style.background = '#d9556d';
-          e.target.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={e => {
-          e.target.style.background = '#E8637A';
-          e.target.style.transform = 'translateY(0)';
-        }}>
-          Masuk
-        </Link>
-      </nav>
-    </div>
-  </header>
-);
+// ===== HEADER =====
+function Header() {
+    const [scrolled, setScrolled] = useState(false);
 
-// ==================== HERO ====================
-const Hero = () => (
-  <section style={{
-    padding: '80px 24px',
-    background: '#FFFBF8',
-    position: 'relative',
-    overflow: 'hidden',
-  }}>
-    <div style={{
-      position: 'absolute',
-      top: -100,
-      right: -100,
-      width: 400,
-      height: 400,
-      borderRadius: '50%',
-      background: 'rgba(232, 99, 122, 0.05)',
-      pointerEvents: 'none',
-    }} />
-    <div style={{
-      position: 'absolute',
-      bottom: -80,
-      left: -80,
-      width: 300,
-      height: 300,
-      borderRadius: '50%',
-      background: 'rgba(245, 230, 216, 0.3)',
-      pointerEvents: 'none',
-    }} />
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: 60,
-      alignItems: 'center',
-    }}>
-      <div>
-        <span style={{
-          display: 'inline-block',
-          background: '#F5E6D8',
-          color: '#E8637A',
-          padding: '6px 18px',
-          borderRadius: 9999,
-          fontSize: 13,
-          fontWeight: 600,
-          marginBottom: 20,
+    return (
+        <header style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            padding: '12px 32px',
+            background: scrolled ? 'rgba(255,255,255,0.96)' : 'rgba(255,255,255,0.9)',
+            backdropFilter: 'blur(16px)',
+            borderBottom: scrolled ? `1px solid ${PRIMARY}15` : 'none',
+            boxShadow: scrolled ? '0 4px 30px rgba(0,0,0,0.06)' : 'none',
+            transition: 'all 0.3s ease'
         }}>
-          🍞 Bakery CRM untuk toko roti modern
-        </span>
-        <h1 style={{
-          fontSize: 44,
-          fontWeight: 700,
-          color: '#3A2A24',
-          lineHeight: 1.2,
-          margin: 0,
-          fontFamily: "'Playfair_Display', serif",
-        }}>
-          Kelola toko roti Anda dengan lebih{' '}
-          <span style={{ color: '#E8637A' }}>rapi</span>, lebih{' '}
-          <span style={{ color: '#E8637A' }}>cepat</span>
-        </h1>
-        <p style={{
-          fontSize: 18,
-          color: '#8B7568',
-          lineHeight: 1.8,
-          marginTop: 16,
-          maxWidth: 480,
-        }}>
-          Rotte membantu pemilik toko roti mengelola pelanggan, pesanan, loyalti, dan laporan dari satu tempat yang sederhana.
-        </p>
-        <div style={{
-          display: 'flex',
-          gap: 12,
-          marginTop: 28,
-        }}>
-          <Link to="/login" style={{
-            background: '#E8637A',
-            color: '#FFFFFF',
-            padding: '14px 36px',
-            borderRadius: 9999,
-            fontSize: 15,
-            fontWeight: 700,
-            textDecoration: 'none',
-            transition: 'all 0.2s',
-            boxShadow: '0 4px 16px rgba(232, 99, 122, 0.35)',
-            display: 'inline-block',
-          }}
-          onMouseEnter={e => {
-            e.target.style.background = '#d9556d';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 24px rgba(232, 99, 122, 0.45)';
-          }}
-          onMouseLeave={e => {
-            e.target.style.background = '#E8637A';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 4px 16px rgba(232, 99, 122, 0.35)';
-          }}>
-            Coba Demo
-          </Link>
-          <a href="#features" style={{
-            background: '#FFFFFF',
-            color: '#E8637A',
-            padding: '14px 36px',
-            borderRadius: 9999,
-            fontSize: 15,
-            fontWeight: 700,
-            textDecoration: 'none',
-            transition: 'all 0.2s',
-            border: '2px solid rgba(232, 99, 122, 0.3)',
-            display: 'inline-block',
-          }}
-          onMouseEnter={e => {
-            e.target.style.borderColor = '#E8637A';
-            e.target.style.background = '#FFF7F2';
-          }}
-          onMouseLeave={e => {
-            e.target.style.borderColor = 'rgba(232, 99, 122, 0.3)';
-            e.target.style.background = '#FFFFFF';
-          }}>
-            Lihat Fitur
-          </a>
-        </div>
-      </div>
-
-      <div style={{
-        background: '#FFFFFF',
-        borderRadius: 28,
-        padding: '32px',
-        border: '1px solid #F5E6D8',
-        boxShadow: '0 8px 32px rgba(58, 42, 36, 0.06)',
-      }}>
-        <div style={{
-          background: '#FFF7F2',
-          borderRadius: 24,
-          padding: '24px',
-        }}>
-          <p style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: '#E8637A',
-            margin: '0 0 16px',
-          }}>
-            📋 Apa yang bisa Anda kendalikan
-          </p>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 10,
-          }}>
-            {[
-              'Data pelanggan terorganisir',
-              'Pesanan tetap terpantau',
-              'Loyalti dan promo lebih mudah',
-            ].map((item, i) => (
-              <div key={i} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                background: '#FFFFFF',
-                padding: '12px 16px',
-                borderRadius: 16,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              }}>
-                <span style={{ color: '#E8637A', fontWeight: 700 }}>✓</span>
-                <span style={{
-                  fontSize: 14,
-                  color: '#8B7568',
-                }}>
-                  {item}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: 12,
-            marginTop: 20,
-            paddingTop: 16,
-            borderTop: '1px solid #F5E6D8',
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: '#E8637A',
-              }}>150+</div>
-              <div style={{
-                fontSize: 11,
-                color: '#8B7568',
-              }}>Pelanggan</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: '#E8637A',
-              }}>4.8/5</div>
-              <div style={{
-                fontSize: 11,
-                color: '#8B7568',
-              }}>Kepuasan</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                fontSize: 22,
-                fontWeight: 700,
-                color: '#E8637A',
-              }}>25</div>
-              <div style={{
-                fontSize: 11,
-                color: '#8B7568',
-              }}>Pesanan/bln</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-// ==================== FITUR (PRD 1) ====================
-const Features = () => (
-  <section id="features" style={{
-    padding: '80px 24px',
-    background: '#FFFFFF',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-    }}>
-      <div style={{
-        textAlign: 'center',
-        maxWidth: 560,
-        margin: '0 auto 48px',
-      }}>
-        <p style={{
-          fontSize: 12,
-          fontWeight: 700,
-          color: '#E8637A',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          margin: 0,
-        }}>
-          Fitur Utama
-        </p>
-        <h2 style={{
-          fontSize: 32,
-          fontWeight: 700,
-          color: '#3A2A24',
-          margin: '8px 0 0',
-          fontFamily: "'Playfair_Display', serif",
-        }}>
-          Semua yang perlu Anda kelola, tersusun dalam satu tempat
-        </h2>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 16,
-      }}>
-        {features.map((feature) => (
-          <div key={feature.title} style={{
-            background: '#FFFFFF',
-            borderRadius: 24,
-            padding: '24px',
-            border: '1px solid #F5E6D8',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 16px 45px -25px rgba(58,42,36,0.3)';
-            e.currentTarget.style.borderColor = '#E8637A';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
-            e.currentTarget.style.borderColor = '#F5E6D8';
-          }}>
             <div style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 14,
+                maxWidth: 1200,
+                margin: '0 auto',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
             }}>
-              <div style={{
-                width: 44,
-                height: 44,
-                borderRadius: 16,
-                background: 'rgba(232, 99, 122, 0.12)',
-                color: '#E8637A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 20,
-                flexShrink: 0,
-              }}>
-                {feature.icon}
-              </div>
-              <div>
-                <h3 style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: '#3A2A24',
-                  margin: 0,
-                }}>
-                  {feature.title}
-                </h3>
-                <p style={{
-                  fontSize: 14,
-                  color: '#8B7568',
-                  margin: '4px 0 0',
-                  lineHeight: 1.7,
-                }}>
-                  {feature.description}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-// ==================== MANFAAT (PRD 1) ====================
-const Benefits = () => (
-  <section id="benefits" style={{
-    padding: '80px 24px',
-    background: '#FFFBF8',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-    }}>
-      <div style={{
-        background: '#F5E6D8',
-        borderRadius: 32,
-        padding: '48px',
-      }}>
-        <div style={{
-          textAlign: 'center',
-          maxWidth: 560,
-          margin: '0 auto 40px',
-        }}>
-          <p style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: '#E8637A',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            margin: 0,
-          }}>
-            Manfaat Bisnis
-          </p>
-          <h2 style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: '#3A2A24',
-            margin: '8px 0 0',
-            fontFamily: "'Playfair_Display', serif",
-          }}>
-            Fokus pada pelanggan dan pertumbuhan toko Anda
-          </h2>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 16,
-        }}>
-          {benefits.map((benefit, index) => (
-            <div key={index} style={{
-              background: 'rgba(255, 255, 255, 0.85)',
-              borderRadius: 22,
-              padding: '20px 24px',
-              border: '1px solid rgba(255, 255, 255, 0.7)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.06)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                marginBottom: 8,
-              }}>
-                <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 12,
-                  background: '#FBE8EC',
-                  color: '#E8637A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 16,
-                  fontWeight: 700,
-                }}>
-                  {index + 1}
-                </div>
-                <span style={{
-                  fontSize: 14,
-                  color: '#3A2A24',
-                  fontWeight: 500,
-                }}>
-                  {benefit}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-// ==================== TESTIMONI (PRD 2) ====================
-const Testimonials = () => {
-  const renderStars = (rating) => {
-    return '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
-  };
-
-  return (
-    <section id="testimonials" style={{
-      padding: '80px 24px',
-      background: '#FFFFFF',
-    }}>
-      <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-      }}>
-        <div style={{
-          textAlign: 'center',
-          maxWidth: 560,
-          margin: '0 auto 48px',
-        }}>
-          <p style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: '#E8637A',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            margin: 0,
-          }}>
-            Testimoni Pelanggan
-          </p>
-          <h2 style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: '#3A2A24',
-            margin: '8px 0 0',
-            fontFamily: "'Playfair_Display', serif",
-          }}>
-            Apa kata mereka tentang Rotte?
-          </h2>
-          <p style={{
-            fontSize: 16,
-            color: '#8B7568',
-            marginTop: 12,
-          }}>
-            Pengalaman nyata dari pemilik toko roti yang sudah menggunakan Rotte
-          </p>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gap: 24,
-        }}>
-          {testimonials.map((testimonial) => (
-            <div key={testimonial.id} style={{
-              background: '#FFFBF8',
-              borderRadius: 24,
-              padding: '28px',
-              border: '1px solid #F5E6D8',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 16px 45px -25px rgba(58,42,36,0.3)';
-              e.currentTarget.style.borderColor = '#E8637A';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
-              e.currentTarget.style.borderColor = '#F5E6D8';
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                marginBottom: 12,
-              }}>
-                <div style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: '50%',
-                  background: '#FBE8EC',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 24,
-                }}>
-                  {testimonial.image}
-                </div>
-                <div>
-                  <h4 style={{
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: '#3A2A24',
-                    margin: 0,
-                  }}>
-                    {testimonial.name}
-                  </h4>
-                  <p style={{
-                    fontSize: 13,
-                    color: '#8B7568',
-                    margin: '2px 0 0',
-                  }}>
-                    {testimonial.role}
-                  </p>
-                </div>
-              </div>
-              
-              <div style={{
-                fontSize: 14,
-                color: '#3A2A24',
-                lineHeight: 1.7,
-                marginBottom: 12,
-                fontStyle: 'italic',
-              }}>
-                "{testimonial.quote}"
-              </div>
-              
-              <div style={{
-                fontSize: 16,
-              }}>
-                {renderStars(testimonial.rating)}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ==================== PRICING (PRD 2) ====================
-const Pricing = () => (
-  <section id="pricing" style={{
-    padding: '80px 24px',
-    background: '#FFFBF8',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-    }}>
-      <div style={{
-        textAlign: 'center',
-        maxWidth: 560,
-        margin: '0 auto 48px',
-      }}>
-        <p style={{
-          fontSize: 12,
-          fontWeight: 700,
-          color: '#E8637A',
-          textTransform: 'uppercase',
-          letterSpacing: '1px',
-          margin: 0,
-        }}>
-          Pilihan Harga
-        </p>
-        <h2 style={{
-          fontSize: 32,
-          fontWeight: 700,
-          color: '#3A2A24',
-          margin: '8px 0 0',
-          fontFamily: "'Playfair_Display', serif",
-        }}>
-          Pilih paket yang sesuai dengan kebutuhan toko Anda
-        </h2>
-        <p style={{
-          fontSize: 16,
-          color: '#8B7568',
-          marginTop: 12,
-        }}>
-          Mulai dari yang sederhana hingga skala besar, semua ada di Rotte
-        </p>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr 1fr',
-        gap: 24,
-        alignItems: 'stretch',
-      }}>
-        {pricingPlans.map((plan) => (
-          <div key={plan.id} style={{
-            background: plan.isPopular ? '#FFFFFF' : '#FFFBF8',
-            borderRadius: 24,
-            padding: '32px',
-            border: plan.isPopular ? '2px solid #E8637A' : '1px solid #F5E6D8',
-            boxShadow: plan.isPopular ? '0 8px 32px rgba(232, 99, 122, 0.15)' : '0 2px 8px rgba(0,0,0,0.02)',
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 16px 45px -25px rgba(58,42,36,0.3)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = plan.isPopular ? '0 8px 32px rgba(232, 99, 122, 0.15)' : '0 2px 8px rgba(0,0,0,0.02)';
-          }}>
-            {plan.isPopular && (
-              <div style={{
-                position: 'absolute',
-                top: -12,
-                right: 24,
-                background: '#E8637A',
-                color: '#FFFFFF',
-                padding: '4px 16px',
-                borderRadius: 9999,
-                fontSize: 12,
-                fontWeight: 700,
-              }}>
-                POPULER
-              </div>
-            )}
-
-            <div style={{ flex: 1 }}>
-              <h3 style={{
-                fontSize: 18,
-                fontWeight: 700,
-                color: '#3A2A24',
-                margin: 0,
-              }}>
-                {plan.name}
-              </h3>
-              <p style={{
-                fontSize: 14,
-                color: '#8B7568',
-                margin: '4px 0 16px',
-              }}>
-                {plan.description}
-              </p>
-
-              <div style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                marginBottom: 16,
-              }}>
-                <span style={{
-                  fontSize: 32,
-                  fontWeight: 700,
-                  color: '#E8637A',
-                }}>
-                  {plan.price}
-                </span>
-                <span style={{
-                  fontSize: 14,
-                  color: '#8B7568',
-                  marginLeft: 4,
-                }}>
-                  {plan.period}
-                </span>
-              </div>
-
-              <ul style={{
-                listStyle: 'none',
-                padding: 0,
-                margin: '0 0 24px',
-              }}>
-                {plan.features.map((feature, index) => (
-                  <li key={index} style={{
+                <Link to="/" style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 0',
-                    fontSize: 14,
-                    color: '#3A2A24',
-                    borderBottom: index < plan.features.length - 1 ? '1px solid #F5E6D8' : 'none',
-                  }}>
-                    <span style={{ color: '#E8637A' }}>✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                    gap: 10,
+                    textDecoration: 'none'
+                }}>
+                    <div style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY_DARK})`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: `0 4px 12px ${PRIMARY}40`
+                    }}>
+                        <img src={logoRotte} alt="Rotte" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+                    </div>
+                    <span style={{
+                        fontSize: 18,
+                        fontWeight: 800,
+                        color: DARK,
+                        letterSpacing: '-0.3px'
+                    }}>
+                        Rotte<span style={{ color: PRIMARY }}>.</span>
+                    </span>
+                </Link>
+
+                <nav style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 24,
+                    fontFamily: "'Inter', sans-serif"
+                }}>
+                    {['Fitur', 'Testimoni', 'Promo'].map((item, idx) => {
+                        const href = ['#features', '#testimonials', '#promos'][idx];
+                        return (
+                            <a key={item} href={href} style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: TEXT,
+                                textDecoration: 'none',
+                                transition: 'color 0.2s'
+                            }}
+                            onMouseEnter={e => e.target.style.color = PRIMARY}
+                            onMouseLeave={e => e.target.style.color = TEXT}>
+                                {item}
+                            </a>
+                        );
+                    })}
+                    <Link to="/login" style={{
+                        background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY_DARK})`,
+                        color: '#FFFFFF',
+                        padding: '8px 22px',
+                        borderRadius: 9999,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        transition: 'all 0.3s ease',
+                        boxShadow: `0 4px 16px ${PRIMARY}40`
+                    }}
+                    onMouseEnter={e => {
+                        e.target.style.transform = 'translateY(-2px)';
+                        e.target.style.boxShadow = `0 8px 24px ${PRIMARY}60`;
+                    }}
+                    onMouseLeave={e => {
+                        e.target.style.transform = 'translateY(0)';
+                        e.target.style.boxShadow = `0 4px 16px ${PRIMARY}40`;
+                    }}>
+                        Masuk
+                    </Link>
+                </nav>
             </div>
+        </header>
+    );
+}
 
-            <Link to="/login" style={{
-              display: 'block',
-              textAlign: 'center',
-              background: plan.isPopular ? '#E8637A' : '#FFFFFF',
-              color: plan.isPopular ? '#FFFFFF' : '#E8637A',
-              padding: '12px 24px',
-              borderRadius: 9999,
-              fontSize: 14,
-              fontWeight: 700,
-              textDecoration: 'none',
-              transition: 'all 0.2s',
-              border: plan.isPopular ? 'none' : '2px solid #E8637A',
-              marginTop: 'auto',
-            }}
-            onMouseEnter={e => {
-              if (plan.isPopular) {
-                e.target.style.background = '#d9556d';
-                e.target.style.transform = 'translateY(-2px)';
-              } else {
-                e.target.style.background = '#FFF7F2';
-                e.target.style.transform = 'translateY(-2px)';
-              }
-            }}
-            onMouseLeave={e => {
-              if (plan.isPopular) {
-                e.target.style.background = '#E8637A';
-                e.target.style.transform = 'translateY(0)';
-              } else {
-                e.target.style.background = '#FFFFFF';
-                e.target.style.transform = 'translateY(0)';
-              }
+// ===== HERO =====
+function Hero() {
+    return (
+        <section style={{
+            padding: '120px 32px 80px 32px',
+            background: `linear-gradient(135deg, #FFFFFF 0%, ${LIGHT_BG} 100%)`,
+            position: 'relative',
+            overflow: 'hidden',
+            minHeight: '80vh',
+            display: 'flex',
+            alignItems: 'center'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: -200,
+                right: -100,
+                width: 400,
+                height: 400,
+                borderRadius: '50%',
+                background: `${PRIMARY}04`,
+                pointerEvents: 'none'
+            }} />
+
+            <div style={{
+                maxWidth: 1200,
+                margin: '0 auto',
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 60,
+                alignItems: 'center',
+                width: '100%',
+                position: 'relative',
+                zIndex: 2
             }}>
-              {plan.cta}
-            </Link>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
+                <div>
+                    <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        background: `${PRIMARY}10`,
+                        padding: '4px 14px',
+                        borderRadius: 9999,
+                        marginBottom: 20
+                    }}>
+                        <span style={{
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: PRIMARY
+                        }}>
+                            Rotte Bakery CRM
+                        </span>
+                    </div>
 
-// ==================== GALERI (PRD 3) ====================
-const Gallery = () => {
-  const [selectedCategory, setSelectedCategory] = useState('Semua');
-  const [selectedItem, setSelectedItem] = useState(null);
+                    <h1 style={{
+                        fontSize: 44,
+                        fontWeight: 800,
+                        color: DARK,
+                        lineHeight: 1.15,
+                        margin: 0,
+                        fontFamily: "'Inter', sans-serif",
+                        letterSpacing: '-1px'
+                    }}>
+                        Kelola Toko Roti
+                        <br />
+                        dengan{' '}
+                        <span style={{ color: PRIMARY }}>Lebih Rapi</span>
+                        {' '}dan{' '}
+                        <span style={{ color: GOLD }}>Lebih Cepat</span>
+                    </h1>
 
-  const categories = ['Semua', ...new Set(galleryItems.map(item => item.category))];
+                    <p style={{
+                        fontSize: 16,
+                        color: TEXT,
+                        lineHeight: 1.8,
+                        marginTop: 16,
+                        maxWidth: 480
+                    }}>
+                        Rotte membantu pemilik toko roti mengelola pelanggan, pesanan, 
+                        loyalitas, dan laporan dari satu platform yang terintegrasi.
+                    </p>
 
-  const filteredItems = selectedCategory === 'Semua'
-    ? galleryItems
-    : galleryItems.filter(item => item.category === selectedCategory);
+                    <div style={{
+                        display: 'flex',
+                        gap: 12,
+                        marginTop: 28,
+                        flexWrap: 'wrap'
+                    }}>
+                        <Link to="/login" style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY_DARK})`,
+                            color: '#FFFFFF',
+                            padding: '12px 32px',
+                            borderRadius: 9999,
+                            fontSize: 14,
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                            transition: 'all 0.3s ease',
+                            boxShadow: `0 4px 16px ${PRIMARY}40`
+                        }}
+                        onMouseEnter={e => {
+                            e.target.style.transform = 'translateY(-2px)';
+                            e.target.style.boxShadow = `0 8px 28px ${PRIMARY}60`;
+                        }}
+                        onMouseLeave={e => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = `0 4px 16px ${PRIMARY}40`;
+                        }}>
+                            Masuk <FaArrowRight size={13} />
+                        </Link>
+                        <a href="#features" style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            background: '#FFFFFF',
+                            color: PRIMARY,
+                            padding: '12px 28px',
+                            borderRadius: 9999,
+                            fontSize: 14,
+                            fontWeight: 600,
+                            textDecoration: 'none',
+                            border: `1.5px solid ${PRIMARY}20`,
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={e => {
+                            e.target.style.borderColor = PRIMARY;
+                            e.target.style.boxShadow = `0 4px 16px ${PRIMARY}10`;
+                        }}
+                        onMouseLeave={e => {
+                            e.target.style.borderColor = `${PRIMARY}20`;
+                            e.target.style.boxShadow = 'none';
+                        }}>
+                            Lihat Fitur
+                        </a>
+                    </div>
 
-  return (
-    <section id="gallery" style={{
-      padding: '80px 24px',
-      background: '#FFFFFF',
-    }}>
-      <div style={{
-        maxWidth: 1200,
-        margin: '0 auto',
-      }}>
-        <div style={{
-          textAlign: 'center',
-          maxWidth: 560,
-          margin: '0 auto 48px',
+                    <div style={{
+                        display: 'flex',
+                        gap: 40,
+                        marginTop: 44,
+                        paddingTop: 28,
+                        borderTop: `1px solid ${PRIMARY}10`
+                    }}>
+                        <div>
+                            <div style={{
+                                fontSize: 24,
+                                fontWeight: 700,
+                                color: PRIMARY
+                            }}>150+</div>
+                            <div style={{ fontSize: 13, color: TEXT }}>Toko Roti</div>
+                        </div>
+                        <div>
+                            <div style={{
+                                fontSize: 24,
+                                fontWeight: 700,
+                                color: GOLD
+                            }}>4.8</div>
+                            <div style={{ fontSize: 13, color: TEXT }}>Rating Kepuasan</div>
+                        </div>
+                        <div>
+                            <div style={{
+                                fontSize: 24,
+                                fontWeight: 700,
+                                color: PRIMARY
+                            }}>25K+</div>
+                            <div style={{ fontSize: 13, color: TEXT }}>Transaksi</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 16
+                }}>
+                    {[
+                        { icon: <FaUsers size={20} />, title: 'Customer', desc: 'Terorganisir', color: PRIMARY },
+                        { icon: <FaClipboardList size={20} />, title: 'Order', desc: 'Terpantau', color: GOLD },
+                        { icon: <FaTrophy size={20} />, title: 'Loyalty', desc: 'Program', color: '#A78BFA' },
+                        { icon: <FaChartLine size={20} />, title: 'Reports', desc: 'Lengkap', color: '#E8637A' }
+                    ].map((item, idx) => (
+                        <div key={idx} style={{
+                            background: '#FFFFFF',
+                            borderRadius: 14,
+                            padding: '24px 20px',
+                            border: `1px solid ${PRIMARY}10`,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'center'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.boxShadow = `0 12px 32px ${item.color}15`;
+                            e.currentTarget.style.borderColor = item.color;
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)';
+                            e.currentTarget.style.borderColor = `${PRIMARY}10`;
+                        }}>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: `${item.color}10`,
+                                color: item.color,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '0 auto 10px'
+                            }}>
+                                {item.icon}
+                            </div>
+                            <div style={{ fontSize: 15, fontWeight: 600, color: DARK }}>{item.title}</div>
+                            <div style={{ fontSize: 12, color: TEXT }}>{item.desc}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ===== FEATURES =====
+function Features() {
+    return (
+        <section id="features" style={{
+            padding: '80px 32px',
+            background: '#FFFFFF'
         }}>
-          <p style={{
-            fontSize: 12,
-            fontWeight: 700,
-            color: '#E8637A',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            margin: 0,
-          }}>
-            Galeri Produk
-          </p>
-          <h2 style={{
-            fontSize: 32,
-            fontWeight: 700,
-            color: '#3A2A24',
-            margin: '8px 0 0',
-            fontFamily: "'Playfair_Display', serif",
-          }}>
-            Lihat Koleksi Produk Kami
-          </h2>
-          <p style={{
-            fontSize: 16,
-            color: '#8B7568',
-            marginTop: 12,
-          }}>
-            Berbagai pilihan roti dan kue berkualitas untuk Anda
-          </p>
-        </div>
+            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+                <div style={{
+                    textAlign: 'center',
+                    maxWidth: 600,
+                    margin: '0 auto 56px'
+                }}>
+                    <span style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: PRIMARY,
+                        textTransform: 'uppercase',
+                        letterSpacing: '2px'
+                    }}>
+                        Fitur Unggulan
+                    </span>
+                    <h2 style={{
+                        fontSize: 32,
+                        fontWeight: 700,
+                        color: DARK,
+                        margin: '8px 0 0',
+                        letterSpacing: '-0.3px'
+                    }}>
+                        Semua yang Anda Butuhkan
+                    </h2>
+                    <p style={{
+                        fontSize: 15,
+                        color: TEXT,
+                        marginTop: 10
+                    }}>
+                        Kelola toko roti Anda dengan fitur-fitur canggih yang mudah digunakan
+                    </p>
+                </div>
 
-        {/* Category Filter */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 12,
-          flexWrap: 'wrap',
-          marginBottom: 32,
-        }}>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              style={{
-                padding: '8px 24px',
-                borderRadius: 9999,
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                background: selectedCategory === category ? '#E8637A' : 'transparent',
-                color: selectedCategory === category ? '#FFFFFF' : '#8B7568',
-                border: selectedCategory === category ? 'none' : '2px solid #F5E6D8',
-              }}
-              onMouseEnter={e => {
-                if (selectedCategory !== category) {
-                  e.target.style.borderColor = '#E8637A';
-                  e.target.style.color = '#E8637A';
-                }
-              }}
-              onMouseLeave={e => {
-                if (selectedCategory !== category) {
-                  e.target.style.borderColor = '#F5E6D8';
-                  e.target.style.color = '#8B7568';
-                }
-              }}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: 20
+                }}>
+                    {features.map((feature, index) => (
+                        <div key={index} style={{
+                            background: '#FFFFFF',
+                            borderRadius: 14,
+                            padding: '28px 24px',
+                            border: `1px solid ${PRIMARY}08`,
+                            transition: 'all 0.4s ease',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'translateY(-6px)';
+                            e.currentTarget.style.boxShadow = `0 20px 48px ${PRIMARY}10`;
+                            e.currentTarget.style.borderColor = `${PRIMARY}30`;
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
+                            e.currentTarget.style.borderColor = `${PRIMARY}08`;
+                        }}>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: `${PRIMARY}10`,
+                                color: PRIMARY,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 14
+                            }}>
+                                {feature.icon}
+                            </div>
+                            <h3 style={{
+                                fontSize: 16,
+                                fontWeight: 600,
+                                color: DARK,
+                                margin: 0
+                            }}>
+                                {feature.title}
+                            </h3>
+                            <p style={{
+                                fontSize: 13,
+                                color: TEXT,
+                                lineHeight: 1.7,
+                                marginTop: 6
+                            }}>
+                                {feature.description}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
 
-        {/* Gallery Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 24,
+// ===== TESTIMONIALS =====
+function Testimonials() {
+    return (
+        <section id="testimonials" style={{
+            padding: '80px 32px',
+            background: LIGHT_BG
         }}>
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedItem(item)}
-              style={{
-                background: '#FFFBF8',
-                borderRadius: 20,
-                padding: '24px',
-                border: '1px solid #F5E6D8',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
+            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+                <div style={{
+                    textAlign: 'center',
+                    maxWidth: 560,
+                    margin: '0 auto 56px'
+                }}>
+                    <span style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: PRIMARY,
+                        textTransform: 'uppercase',
+                        letterSpacing: '2px'
+                    }}>
+                        Testimoni
+                    </span>
+                    <h2 style={{
+                        fontSize: 32,
+                        fontWeight: 700,
+                        color: DARK,
+                        margin: '8px 0 0',
+                        letterSpacing: '-0.3px'
+                    }}>
+                        Apa Kata Mereka?
+                    </h2>
+                    <p style={{
+                        fontSize: 15,
+                        color: TEXT,
+                        marginTop: 10
+                    }}>
+                        Pengalaman nyata dari pemilik toko roti yang sudah menggunakan Rotte
+                    </p>
+                </div>
+
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: 24
+                }}>
+                    {testimonials.map((t) => (
+                        <div key={t.id} style={{
+                            background: '#FFFFFF',
+                            borderRadius: 14,
+                            padding: '28px 24px',
+                            border: `1px solid ${PRIMARY}08`,
+                            transition: 'all 0.4s ease',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                            position: 'relative'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.boxShadow = `0 16px 40px ${PRIMARY}10`;
+                            e.currentTarget.style.borderColor = `${PRIMARY}30`;
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
+                            e.currentTarget.style.borderColor = `${PRIMARY}08`;
+                        }}>
+                            <div style={{
+                                position: 'absolute',
+                                top: 16,
+                                right: 20,
+                                fontSize: 24,
+                                opacity: 0.06,
+                                color: PRIMARY
+                            }}>
+                                <FaQuoteLeft />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                                <div style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: '50%',
+                                    background: `${PRIMARY}10`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 16,
+                                    fontWeight: 600,
+                                    color: PRIMARY
+                                }}>
+                                    {t.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 style={{
+                                        fontSize: 14,
+                                        fontWeight: 600,
+                                        color: DARK,
+                                        margin: 0
+                                    }}>
+                                        {t.name}
+                                    </h4>
+                                    <p style={{
+                                        fontSize: 12,
+                                        color: TEXT,
+                                        margin: 0
+                                    }}>
+                                        {t.role}
+                                    </p>
+                                </div>
+                            </div>
+                            <p style={{
+                                fontSize: 14,
+                                color: TEXT,
+                                lineHeight: 1.7,
+                                fontStyle: 'italic',
+                                margin: 0
+                            }}>
+                                "{t.quote}"
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ===== PROMOS =====
+function Promos() {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const itemsPerPage = 3;
+    const totalPages = Math.ceil(promos.length / itemsPerPage);
+
+    const visibleItems = promos.slice(
+        currentIndex * itemsPerPage,
+        currentIndex * itemsPerPage + itemsPerPage
+    );
+
+    return (
+        <section id="promos" style={{
+            padding: '80px 32px',
+            background: '#FFFFFF'
+        }}>
+            <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 40,
+                    flexWrap: 'wrap',
+                    gap: 16
+                }}>
+                    <div>
+                        <span style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            color: PRIMARY,
+                            textTransform: 'uppercase',
+                            letterSpacing: '2px'
+                        }}>
+                            Promo Berjalan
+                        </span>
+                        <h2 style={{
+                            fontSize: 32,
+                            fontWeight: 700,
+                            color: DARK,
+                            margin: '4px 0 0',
+                            letterSpacing: '-0.3px'
+                        }}>
+                            Promo yang Sedang Berjalan
+                        </h2>
+                    </div>
+                    {totalPages > 1 && (
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <button onClick={() => setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages)} style={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: '50%',
+                                border: `1px solid ${PRIMARY}20`,
+                                background: '#FFFFFF',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                color: TEXT
+                            }}
+                            onMouseEnter={e => { e.target.style.background = PRIMARY; e.target.style.color = '#FFF'; }}
+                            onMouseLeave={e => { e.target.style.background = '#FFFFFF'; e.target.style.color = TEXT; }}>
+                                <FaChevronLeft size={13} />
+                            </button>
+                            <button onClick={() => setCurrentIndex((prev) => (prev + 1) % totalPages)} style={{
+                                width: 34,
+                                height: 34,
+                                borderRadius: '50%',
+                                border: `1px solid ${PRIMARY}20`,
+                                background: '#FFFFFF',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                color: TEXT
+                            }}
+                            onMouseEnter={e => { e.target.style.background = PRIMARY; e.target.style.color = '#FFF'; }}
+                            onMouseLeave={e => { e.target.style.background = '#FFFFFF'; e.target.style.color = TEXT; }}>
+                                <FaChevronRight size={13} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    gap: 24
+                }}>
+                    {visibleItems.map((promo) => (
+                        <div key={promo.id} style={{
+                            background: LIGHT_BG,
+                            borderRadius: 14,
+                            padding: '28px 24px',
+                            border: `1px solid ${PRIMARY}08`,
+                            transition: 'all 0.4s ease',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.transform = 'translateY(-4px)';
+                            e.currentTarget.style.boxShadow = `0 16px 40px ${PRIMARY}10`;
+                            e.currentTarget.style.borderColor = `${PRIMARY}30`;
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.borderColor = `${PRIMARY}08`;
+                        }}>
+                            <div style={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                padding: '4px 14px',
+                                background: `linear-gradient(135deg, ${GOLD}, #B8942E)`,
+                                color: '#FFFFFF',
+                                fontSize: 11,
+                                fontWeight: 600,
+                                borderRadius: '0 14px 0 14px'
+                            }}>
+                                {promo.discount}
+                            </div>
+                            <h3 style={{
+                                fontSize: 17,
+                                fontWeight: 600,
+                                color: DARK,
+                                margin: '0 0 6px',
+                                paddingRight: 60
+                            }}>
+                                {promo.title}
+                            </h3>
+                            <p style={{
+                                fontSize: 13,
+                                color: TEXT,
+                                lineHeight: 1.6,
+                                margin: '0 0 12px'
+                            }}>
+                                {promo.description}
+                            </p>
+                            <div style={{
+                                fontSize: 12,
+                                color: TEXT_SECONDARY,
+                                opacity: 0.6
+                            }}>
+                                Berlaku hingga: {promo.validUntil}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {totalPages > 1 && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: 6,
+                        marginTop: 24
+                    }}>
+                        {Array.from({ length: totalPages }).map((_, idx) => (
+                            <div key={idx} style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: idx === currentIndex ? PRIMARY : `${PRIMARY}20`,
+                                transition: 'all 0.3s ease',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => setCurrentIndex(idx)} />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
+// ===== CTA =====
+function CTA() {
+    return (
+        <section style={{
+            padding: '80px 32px',
+            background: `linear-gradient(135deg, ${DARK}, #2A2A4A)`,
+            position: 'relative',
+            overflow: 'hidden'
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: -100,
+                right: -100,
+                width: 300,
+                height: 300,
+                borderRadius: '50%',
+                background: `${PRIMARY}08`,
+                pointerEvents: 'none'
+            }} />
+
+            <div style={{
+                maxWidth: 700,
+                margin: '0 auto',
                 textAlign: 'center',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = '0 16px 45px -25px rgba(58,42,36,0.3)';
-                e.currentTarget.style.borderColor = '#E8637A';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
-                e.currentTarget.style.borderColor = '#F5E6D8';
-              }}
-            >
-              <div style={{
-                fontSize: 64,
-                marginBottom: 12,
-                display: 'block',
-              }}>
-                {item.image}
-              </div>
-              <h4 style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: '#3A2A24',
-                margin: '0 0 4px',
-              }}>
-                {item.title}
-              </h4>
-              <p style={{
-                fontSize: 13,
-                color: '#8B7568',
-                margin: '0 0 8px',
-              }}>
-                {item.description}
-              </p>
-              <div style={{
+                position: 'relative',
+                zIndex: 2
+            }}>
+                <h2 style={{
+                    fontSize: 32,
+                    fontWeight: 700,
+                    color: '#FFFFFF',
+                    margin: 0,
+                    letterSpacing: '-0.3px'
+                }}>
+                    Siap Membawa Bisnis Roti Anda ke Level Berikutnya?
+                </h2>
+                <p style={{
+                    fontSize: 16,
+                    color: 'rgba(255,255,255,0.6)',
+                    lineHeight: 1.7,
+                    marginTop: 12,
+                    maxWidth: 500,
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
+                }}>
+                    Mulai gunakan Rotte sekarang dan rasakan kemudahan mengelola toko roti Anda.
+                </p>
+                <Link to="/login" style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY_DARK})`,
+                    color: '#FFFFFF',
+                    padding: '12px 36px',
+                    borderRadius: 9999,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    transition: 'all 0.3s ease',
+                    boxShadow: `0 4px 16px ${PRIMARY}40`,
+                    marginTop: 24
+                }}
+                onMouseEnter={e => {
+                    e.target.style.transform = 'translateY(-2px)';
+                    e.target.style.boxShadow = `0 8px 28px ${PRIMARY}60`;
+                }}
+                onMouseLeave={e => {
+                    e.target.style.transform = 'translateY(0)';
+                    e.target.style.boxShadow = `0 4px 16px ${PRIMARY}40`;
+                }}>
+                    Mulai Sekarang <FaArrowRight size={14} />
+                </Link>
+            </div>
+        </section>
+    );
+}
+
+// ===== FOOTER =====
+function Footer() {
+    return (
+        <footer style={{
+            background: DARK,
+            padding: '32px 32px',
+            borderTop: `1px solid ${PRIMARY}10`
+        }}>
+            <div style={{
+                maxWidth: 1200,
+                margin: '0 auto',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-              }}>
-                <span style={{
-                  fontSize: 12,
-                  color: '#E8637A',
-                  background: 'rgba(232, 99, 122, 0.1)',
-                  padding: '2px 12px',
-                  borderRadius: 9999,
-                  fontWeight: 600,
-                }}>
-                  {item.category}
-                </span>
-                <span style={{
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: '#E8637A',
-                }}>
-                  {item.price}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+                flexWrap: 'wrap',
+                gap: 16
+            }}>
+                <div>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10
+                    }}>
+                        <span style={{
+                            fontSize: 18,
+                            fontWeight: 700,
+                            color: '#FFFFFF',
+                            letterSpacing: '-0.3px'
+                        }}>
+                            Rotte<span style={{ color: PRIMARY }}>.</span>
+                        </span>
+                    </div>
+                    <p style={{
+                        fontSize: 12,
+                        color: 'rgba(255,255,255,0.25)',
+                        marginTop: 2
+                    }}>
+                        Bakery CRM Platform
+                    </p>
+                </div>
 
-        {/* Modal Detail Produk */}
-        {selectedItem && (
-          <div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              backdropFilter: 'blur(8px)',
-              zIndex: 1000,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 24,
-            }}
-            onClick={() => setSelectedItem(null)}
-          >
-            <div
-              style={{
-                background: '#FFFFFF',
-                borderRadius: 32,
-                padding: '40px',
-                maxWidth: 480,
-                width: '100%',
+                <div style={{
+                    display: 'flex',
+                    gap: 20,
+                    flexWrap: 'wrap'
+                }}>
+                    {['Fitur', 'Testimoni', 'Promo', 'Masuk'].map((item, idx) => {
+                        const href = ['#features', '#testimonials', '#promos', '/login'][idx];
+                        const isLink = idx === 3;
+                        if (isLink) {
+                            return (
+                                <Link key={item} to={href} style={{
+                                    fontSize: 12,
+                                    color: 'rgba(255,255,255,0.4)',
+                                    textDecoration: 'none',
+                                    transition: 'color 0.2s'
+                                }}
+                                onMouseEnter={e => e.target.style.color = PRIMARY}
+                                onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
+                                    {item}
+                                </Link>
+                            );
+                        }
+                        return (
+                            <a key={item} href={href} style={{
+                                fontSize: 12,
+                                color: 'rgba(255,255,255,0.4)',
+                                textDecoration: 'none',
+                                transition: 'color 0.2s'
+                            }}
+                            onMouseEnter={e => e.target.style.color = PRIMARY}
+                            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}>
+                                {item}
+                            </a>
+                        );
+                    })}
+                </div>
+
+                <div style={{ display: 'flex', gap: 10 }}>
+                    {[FaInstagram, FaTiktok, FaWhatsapp].map((Icon, idx) => (
+                        <a key={idx} href="#" style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.04)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'rgba(255,255,255,0.3)',
+                            transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={e => { e.target.style.background = `${PRIMARY}20`; e.target.style.color = PRIMARY; }}
+                        onMouseLeave={e => { e.target.style.background = 'rgba(255,255,255,0.04)'; e.target.style.color = 'rgba(255,255,255,0.3)'; }}>
+                            <Icon size={14} />
+                        </a>
+                    ))}
+                </div>
+            </div>
+
+            <div style={{
+                maxWidth: 1200,
+                margin: '20px auto 0',
+                paddingTop: 14,
+                borderTop: `1px solid ${PRIMARY}08`,
                 textAlign: 'center',
-                position: 'relative',
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setSelectedItem(null)}
-                style={{
-                  position: 'absolute',
-                  top: 16,
-                  right: 20,
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 28,
-                  cursor: 'pointer',
-                  color: '#8B7568',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => e.target.style.color = '#E8637A'}
-                onMouseLeave={e => e.target.style.color = '#8B7568'}
-              >
-                ✕
-              </button>
-              
-              <div style={{
-                fontSize: 80,
-                marginBottom: 16,
-              }}>
-                {selectedItem.image}
-              </div>
-              
-              <h3 style={{
-                fontSize: 24,
-                fontWeight: 700,
-                color: '#3A2A24',
-                margin: '0 0 8px',
-                fontFamily: "'Playfair_Display', serif",
-              }}>
-                {selectedItem.title}
-              </h3>
-              
-              <p style={{
-                fontSize: 14,
-                color: '#8B7568',
-                margin: '0 0 16px',
-                lineHeight: 1.6,
-              }}>
-                {selectedItem.description}
-              </p>
-              
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: 16,
-              }}>
-                <span style={{
-                  background: 'rgba(232, 99, 122, 0.1)',
-                  color: '#E8637A',
-                  padding: '4px 16px',
-                  borderRadius: 9999,
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}>
-                  {selectedItem.category}
-                </span>
-                <span style={{
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: '#E8637A',
-                }}>
-                  {selectedItem.price}
-                </span>
-              </div>
-              
-              <Link to="/login" style={{
-                display: 'block',
-                marginTop: 24,
-                background: '#E8637A',
-                color: '#FFFFFF',
-                padding: '12px 24px',
-                borderRadius: 9999,
-                fontSize: 14,
-                fontWeight: 700,
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.target.style.background = '#d9556d';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={e => {
-                e.target.style.background = '#E8637A';
-                e.target.style.transform = 'translateY(0)';
-              }}>
-                Pesan Sekarang
-              </Link>
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.15)'
+            }}>
+                © 2026 Rotte Bakery CRM. All rights reserved.
             </div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-};
+        </footer>
+    );
+}
 
-// ==================== CONTACT ====================
-const Contact = () => (
-  <section id="contact" style={{
-    padding: '80px 24px',
-    background: '#FFFBF8',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-    }}>
-      <div style={{
-        background: '#FFFFFF',
-        borderRadius: 32,
-        padding: '56px 48px',
-        textAlign: 'center',
-        border: '1px solid #F5E6D8',
-        boxShadow: '0 8px 32px rgba(58, 42, 36, 0.05)',
-      }}>
-        <h2 style={{
-          fontSize: 32,
-          fontWeight: 700,
-          color: '#3A2A24',
-          margin: 0,
-          fontFamily: "'Playfair_Display', serif",
-        }}>
-          Siap melihat Rotte bekerja untuk toko roti Anda?
-        </h2>
-        <p style={{
-          fontSize: 16,
-          color: '#8B7568',
-          marginTop: 12,
-          maxWidth: 480,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}>
-          Coba demo atau hubungi tim kami untuk melihat bagaimana Rotte bisa membantu bisnis Anda.
-        </p>
-        <div style={{
-          display: 'flex',
-          gap: 12,
-          justifyContent: 'center',
-          marginTop: 28,
-        }}>
-          <Link to="/login" style={{
-            background: '#E8637A',
-            color: '#FFFFFF',
-            padding: '14px 36px',
-            borderRadius: 9999,
-            fontSize: 15,
-            fontWeight: 700,
-            textDecoration: 'none',
-            transition: 'all 0.2s',
-            boxShadow: '0 4px 16px rgba(232, 99, 122, 0.35)',
-          }}
-          onMouseEnter={e => {
-            e.target.style.background = '#d9556d';
-            e.target.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={e => {
-            e.target.style.background = '#E8637A';
-            e.target.style.transform = 'translateY(0)';
-          }}>
-            Coba Demo
-          </Link>
-          <a href="mailto:hello@rotte.app" style={{
-            background: 'transparent',
-            color: '#E8637A',
-            padding: '14px 36px',
-            borderRadius: 9999,
-            fontSize: 15,
-            fontWeight: 700,
-            textDecoration: 'none',
-            transition: 'all 0.2s',
-            border: '2px solid rgba(232, 99, 122, 0.3)',
-          }}
-          onMouseEnter={e => {
-            e.target.style.borderColor = '#E8637A';
-            e.target.style.background = '#FFF7F2';
-          }}
-          onMouseLeave={e => {
-            e.target.style.borderColor = 'rgba(232, 99, 122, 0.3)';
-            e.target.style.background = 'transparent';
-          }}>
-            Hubungi Kami
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-);
-
-// ==================== FOOTER ====================
-const Footer = () => (
-  <footer style={{
-    borderTop: '1px solid #F5E6D8',
-    padding: '24px',
-    background: '#FFFFFF',
-  }}>
-    <div style={{
-      maxWidth: 1200,
-      margin: '0 auto',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-      gap: 16,
-    }}>
-      <p style={{
-        fontSize: 14,
-        color: '#8B7568',
-        margin: 0,
-      }}>
-        © 2026 Rotte. All rights reserved.
-      </p>
-      <div style={{
-        display: 'flex',
-        gap: 24,
-        flexWrap: 'wrap',
-      }}>
-        <a href="#features" style={{
-          fontSize: 14,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Fitur
-        </a>
-        <a href="#testimonials" style={{
-          fontSize: 14,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Testimoni
-        </a>
-        <a href="#pricing" style={{
-          fontSize: 14,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Harga
-        </a>
-        <a href="#gallery" style={{
-          fontSize: 14,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Galeri
-        </a>
-        <a href="#contact" style={{
-          fontSize: 14,
-          color: '#8B7568',
-          textDecoration: 'none',
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={e => e.target.style.color = '#E8637A'}
-        onMouseLeave={e => e.target.style.color = '#8B7568'}>
-          Hubungi
-        </a>
-      </div>
-    </div>
-  </footer>
-);
-
-// ============================================================
+// ================================================================
 // MAIN
-// ============================================================
+// ================================================================
 export default function LandingPage() {
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#FFFBF8',
-    }}>
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-        <Benefits />
-        <Testimonials />
-        <Pricing />
-        <Gallery />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
-  );
+    return (
+        <div style={{
+            minHeight: '100vh',
+            background: '#FFFFFF',
+            fontFamily: "'Inter', sans-serif"
+        }}>
+            <Header />
+            <main>
+                <Hero />
+                <Features />
+                <Testimonials />
+                <Promos />
+                <CTA />
+            </main>
+            <Footer />
+        </div>
+    );
 }

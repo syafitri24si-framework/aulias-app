@@ -1,237 +1,363 @@
-// [COM] Import komponen
-import { useEffect, useRef } from "react";
-import { FaStar, FaMedal, FaTrophy, FaCrown, FaCookie } from "react-icons/fa";
+// src/pages/Loyalty.jsx - LENGKAP DENGAN SUPABASE + REFRESH!
+import { useState, useEffect, useRef, useCallback } from "react";
+import { FaStar, FaMedal, FaTrophy, FaCrown, FaCookie, FaSync } from "react-icons/fa";
 import PageHeader from "../components/PageHeader";
+import Button from "../components/Button";
 import Card from "../components/Card";
 import Avatar from "../components/Avatar";
 import TierBadge from "../components/TierBadge";
-import customers from "../data/customers";
-import orders from "../data/orders";
+import { customersAPI, transactionsAPI } from "../services/supabase";
 
 const PRIMARY = "#5E81F4";
 const WARNING = "#F4BE5E";
 
-// [COM] TIER configuration
 const TIER = {
-    Gold:   { icon: <FaCrown />,  bg: "rgba(94, 129, 244, 0.1)", color: PRIMARY, border: "rgba(94, 129, 244, 0.3)", next: null,  nextPts: null, bar: PRIMARY },
-    Silver: { icon: <FaTrophy />, bg: "rgba(129, 129, 165, 0.1)", color: "#8181A5", border: "rgba(129, 129, 165, 0.3)", next: "Gold",   nextPts: 1000, bar: "#8181A5" },
-    Bronze: { icon: <FaMedal />,  bg: "rgba(244, 190, 94, 0.1)", color: WARNING, border: "rgba(244, 190, 94, 0.3)", next: "Silver", nextPts: 500,  bar: WARNING },
-    None:   { icon: <FaStar />,   bg: "rgba(170, 171, 176, 0.1)", color: "#AAABB0", border: "rgba(170, 171, 176, 0.2)", next: "Bronze", nextPts: 100,  bar: "#AAABB0" },
+  Gold: { icon: <FaCrown />, bg: "rgba(94, 129, 244, 0.1)", color: PRIMARY, next: null, nextPts: null, bar: PRIMARY },
+  Silver: { icon: <FaTrophy />, bg: "rgba(129, 129, 165, 0.1)", color: "#8181A5", next: "Gold", nextPts: 1000, bar: "#8181A5" },
+  Bronze: { icon: <FaMedal />, bg: "rgba(244, 190, 94, 0.1)", color: WARNING, next: "Silver", nextPts: 500, bar: WARNING },
+  None: { icon: <FaStar />, bg: "rgba(170, 171, 176, 0.1)", color: "#AAABB0", next: "Bronze", nextPts: 100, bar: "#AAABB0" },
 };
 
-// [COM] TierSummaryCard component
-function TierSummaryCard({ tier, count, icon, bg, color, border }) {
-    return (
-        <Card padding="20px 22px">
-            <div style={{ background: bg, border: `1px solid ${border}`, borderRadius: 14, padding: "20px 22px", flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 22, color }}>{icon}</span>
-                    <span style={{ fontSize: 32, fontWeight: 800, color }}>{count}</span>
-                </div>
-                <div style={{ fontWeight: 700, fontSize: 15, color }}>{tier} Member</div>
-                <div style={{ fontSize: 11, color: color + "99" }}>{count} pelanggan aktif</div>
-            </div>
-        </Card>
-    );
-}
-
-// [COM] ProgressBar component
+// Komponen Progress Bar
 function ProgressBar({ value, max, color }) {
-    const pct = max ? Math.min((value / max) * 100, 100) : 100;
-    return (
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ flex: 1, height: 6, background: "#F0F0F3", borderRadius: 3 }}>
-                <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 3, transition: "width 0.6s ease" }} />
-            </div>
-            <span style={{ fontSize: 11, color: "#8181A5", minWidth: 36, textAlign: "right" }}>{Math.round(pct)}%</span>
-        </div>
-    );
+  const pct = max ? Math.min((value / max) * 100, 100) : 100;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, height: 6, background: "#F0F0F3", borderRadius: 3 }}>
+        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 3, transition: "width 0.6s ease" }} />
+      </div>
+      <span style={{ fontSize: 11, color: "#8181A5", minWidth: 36, textAlign: "right" }}>{Math.round(pct)}%</span>
+    </div>
+  );
 }
 
-// [COM] TierDonut chart
-function TierDonut({ data }) {
-    const canvasRef = useRef(null);
-    const chartRef = useRef(null);
+export default function Loyalty() {
+  const [customers, setCustomers] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
-    useEffect(() => {
-        if (!canvasRef.current) return;
-        const load = () => {
-            if (!window.Chart) return;
-            if (chartRef.current) chartRef.current.destroy();
-            chartRef.current = new window.Chart(canvasRef.current, {
-                type: "doughnut",
-                data: {
-                    labels: data.map(d => d.label),
-                    datasets: [{
-                        data: data.map(d => d.value),
-                        backgroundColor: data.map(d => d.color),
-                        borderWidth: 0,
-                        hoverOffset: 8,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: "68%",
-                    plugins: { legend: { display: false } }
-                }
-            });
-        };
-        if (window.Chart) load();
-        else {
-            const s = document.createElement("script");
-            s.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js";
-            s.onload = load;
-            document.head.appendChild(s);
-        }
-        return () => { if (chartRef.current) chartRef.current.destroy(); };
-    }, []);
+  // ============================================================
+  // 🔥 FUNGSI LOAD DATA
+  // ============================================================
+  const loadData = useCallback(async (showRefresh = false) => {
+    if (showRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
 
-    return <canvas ref={canvasRef} style={{ width: "160px", height: "160px" }} />;
-}
+    try {
+      console.log("🔄 Loading loyalty data...");
+      
+      const [custData, transData] = await Promise.all([
+        customersAPI.fetchAll(),
+        transactionsAPI.fetchAll()
+      ]);
 
-const getCustomerFavoriteItem = (customerId) => {
-    const customerOrders = orders.filter(o => o.customerId === customerId);
+      console.log("📊 Customers loaded:", custData?.length || 0);
+      console.log("📊 Transactions loaded:", transData?.length || 0);
+
+      // 🔥 FILTER: HANYA TAMPILKAN MEMBER (loyalty_tier != 'None')
+      const members = (custData || []).filter(c => c.loyalty_tier !== "None");
+      console.log("📊 Members (excluding None):", members.length);
+
+      setCustomers(custData || []);
+      setTransactions(transData || []);
+      setLastUpdated(new Date().toLocaleTimeString());
+
+    } catch (err) {
+      console.error("Error loading data:", err);
+    } finally {
+      if (showRefresh) {
+        setRefreshing(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  // ============================================================
+  // LOAD DATA PERTAMA KALI
+  // ============================================================
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // ============================================================
+  // AUTO REFRESH SETIAP 30 DETIK
+  // ============================================================
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("🔄 Auto-refresh loyalty...");
+      loadData(true);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [loadData]);
+
+  // ============================================================
+  // MANUAL REFRESH
+  // ============================================================
+  const handleRefresh = () => {
+    loadData(true);
+  };
+
+  // Get customer favorite item
+  const getFavoriteItem = (customerId) => {
+    const customerTrans = transactions.filter(t => t.id_customer === customerId);
     const itemCount = {};
-    customerOrders.forEach(order => {
-        order.items?.forEach(item => {
-            itemCount[item] = (itemCount[item] || 0) + 1;
-        });
+    customerTrans.forEach(t => {
+      const items = t.nama_produk?.split(',').map(i => i.trim()) || [];
+      items.forEach(item => {
+        itemCount[item] = (itemCount[item] || 0) + 1;
+      });
     });
     const favorite = Object.entries(itemCount).sort((a, b) => b[1] - a[1])[0];
     return favorite ? favorite[0] : "-";
-};
+  };
 
-export default function Loyalty() {
-    const members = customers.filter(c => c.loyalty !== "None");
-    const gold   = customers.filter(c => c.loyalty === "Gold").length;
-    const silver = customers.filter(c => c.loyalty === "Silver").length;
-    const bronze = customers.filter(c => c.loyalty === "Bronze").length;
-    const nonMember = customers.filter(c => c.loyalty === "None").length;
+  // 🔥 FILTER: HANYA MEMBER (bukan None)
+  const members = customers.filter(c => c.loyalty_tier !== "None");
+  const gold = customers.filter(c => c.loyalty_tier === "Gold").length;
+  const silver = customers.filter(c => c.loyalty_tier === "Silver").length;
+  const bronze = customers.filter(c => c.loyalty_tier === "Bronze").length;
+  const nonMember = customers.filter(c => c.loyalty_tier === "None").length;
 
-    const totalPoints = members.reduce((s, c) => s + c.points, 0);
-    const avgPoints = members.length ? Math.round(totalPoints / members.length) : 0;
+  const totalPoints = members.reduce((s, c) => s + (c.points || 0), 0);
+  const avgPoints = members.length ? Math.round(totalPoints / members.length) : 0;
 
-    const donutData = [
-        { label: "Gold",   value: gold,      color: PRIMARY },
-        { label: "Silver", value: silver,    color: "#8181A5" },
-        { label: "Bronze", value: bronze,    color: WARNING },
-        { label: "Non",    value: nonMember, color: "#AAABB0" },
-    ];
+  const membersWithFavorites = members.map(c => ({
+    ...c,
+    favoriteItem: getFavoriteItem(c.id_customer)
+  }));
 
-    const membersWithFavorites = members.map(c => ({ ...c, favoriteItem: getCustomerFavoriteItem(c.id) }));
-
+  if (loading) {
     return (
-        <div style={{ background: "#F6F6F6", minHeight: "100vh", paddingBottom: 32 }}>
-            <PageHeader title="Loyalty Program" breadcrumb={["Dashboard", "Loyalty"]} />
-
-            {/* [COM] Tier Summary Cards */}
-            <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-                <TierSummaryCard tier="Gold"   count={gold}      icon={TIER.Gold.icon}   bg={TIER.Gold.bg}   color={TIER.Gold.color}   border={TIER.Gold.border}   />
-                <TierSummaryCard tier="Silver" count={silver}    icon={TIER.Silver.icon} bg={TIER.Silver.bg} color={TIER.Silver.color} border={TIER.Silver.border} />
-                <TierSummaryCard tier="Bronze" count={bronze}    icon={TIER.Bronze.icon} bg={TIER.Bronze.bg} color={TIER.Bronze.color} border={TIER.Bronze.border} />
-                <TierSummaryCard tier="Non"    count={nonMember} icon={TIER.None.icon}   bg={TIER.None.bg}   color={TIER.None.color}   border={TIER.None.border}   />
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16, marginBottom: 16 }}>
-                {/* [COM] Distribusi Tier - pakai Card */}
-                <Card padding="22px 24px">
-                    <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Distribusi Tier</div>
-                    <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Komposisi member saat ini</div>
-                    <div style={{ position: "relative", height: 160, marginBottom: 20, display: "flex", justifyContent: "center" }}>
-                        <TierDonut data={donutData} />
-                        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                            <div style={{ fontSize: 24, fontWeight: 800, color: "#1A1A1A" }}>{members.length}</div>
-                            <div style={{ fontSize: 11, color: PRIMARY }}>members</div>
-                        </div>
-                    </div>
-                    {donutData.map(d => (
-                        <div key={d.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 12 }}>
-                            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ width: 10, height: 10, borderRadius: 2, background: d.color, display: "inline-block" }} />
-                                <span style={{ color: "#8181A5" }}>{d.label === "Non" ? "Non-Member" : d.label}</span>
-                            </span>
-                            <span style={{ fontWeight: 700, color: "#1A1A1A" }}>{d.value}</span>
-                        </div>
-                    ))}
-                    <div style={{ marginTop: 16, borderTop: "1px solid #F0F0F3", paddingTop: 14 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                            <span style={{ color: "#8181A5" }}>Total Poin Beredar</span>
-                            <span style={{ fontWeight: 700, color: PRIMARY }}>{totalPoints.toLocaleString()}</span>
-                        </div>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 6 }}>
-                            <span style={{ color: "#8181A5" }}>Rata-rata Poin</span>
-                            <span style={{ fontWeight: 700, color: "#1A1A1A" }}>{avgPoints}</span>
-                        </div>
-                    </div>
-                </Card>
-
-                {/* [COM] Poin & Progress Member - pakai Card */}
-                <Card padding="22px 24px">
-                    <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>Poin & Progress Member</div>
-                    <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Progress menuju tier berikutnya + menu favorit</div>
-                    <div style={{ overflowX: "auto" }}>
-                        <table className="figma-table">
-                            <thead><tr><th>Member</th><th>Tier</th><th>Poin</th><th>Menu Favorit</th><th>Progress</th></tr></thead>
-                            <tbody>
-                                {membersWithFavorites.slice(0, 10).map(c => {
-                                    const t = TIER[c.loyalty];
-                                    return (
-                                        <tr key={c.id}>
-                                            <td>
-                                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                                    {/* [COM] Pakai Avatar */}
-                                                    <Avatar name={c.name} size="sm" />
-                                                    <span style={{ fontWeight: 600, color: "#1A1A1A" }}>{c.name}</span>
-                                                </div>
-                                            </td>
-                                            {/* [COM] Pakai TierBadge */}
-                                            <td><TierBadge tier={c.loyalty} /></td>
-                                            <td style={{ fontWeight: 700, color: PRIMARY }}>{c.points}</td>
-                                            <td>
-                                                <span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.1)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}>
-                                                    <FaCookie size={10} style={{ color: PRIMARY }} />
-                                                    <span style={{ fontSize: 12, color: PRIMARY }}>{c.favoriteItem}</span>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {t.nextPts ? (
-                                                    <div>
-                                                        <ProgressBar value={c.points} max={t.nextPts} color={t.bar} />
-                                                        <div style={{ fontSize: 10, color: "#8181A5", marginTop: 3 }}>
-                                                            {Math.max(0, t.nextPts - c.points)} poin lagi → {t.next}
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <span style={{ fontSize: 12, color: PRIMARY, fontWeight: 700 }}>✦ Tier Tertinggi</span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </Card>
-            </div>
-
-            {/* [COM] Syarat Naik Tier - pakai Card */}
-            <Card padding="20px 24px">
-                <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 16 }}>Syarat Naik Tier</div>
-                <div style={{ display: "flex", gap: 0 }}>
-                    {[
-                        { tier: "Bronze", pts: "0–499 poin", color: WARNING, bg: "rgba(244, 190, 94, 0.05)", desc: "Gratis bergabung, dapatkan poin setiap pembelian" },
-                        { tier: "Silver", pts: "500–999 poin", color: "#8181A5", bg: "rgba(129, 129, 165, 0.05)", desc: "Diskon 5% untuk semua menu, prioritas antrian" },
-                        { tier: "Gold",   pts: "1000+ poin", color: PRIMARY, bg: "rgba(94, 129, 244, 0.05)", desc: "Diskon 10%, akses promo eksklusif, gratis ongkir" },
-                    ].map((t, i) => (
-                        <div key={t.tier} style={{ flex: 1, background: t.bg, padding: "16px 18px", borderRadius: i === 0 ? "10px 0 0 10px" : i === 2 ? "0 10px 10px 0" : 0, borderRight: i < 2 ? "2px solid #FFF" : "none" }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: t.color }}>{t.tier}</div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: t.color + "99", marginTop: 2 }}>{t.pts}</div>
-                            <div style={{ fontSize: 12, color: "#8181A5", marginTop: 8 }}>{t.desc}</div>
-                        </div>
-                    ))}
-                </div>
-            </Card>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        minHeight: "60vh" 
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            border: "3px solid #E8ECF2",
+            borderTop: `3px solid ${PRIMARY}`,
+            animation: "spin 0.8s linear infinite",
+            margin: "0 auto 12px"
+          }} />
+          <p style={{ color: "#8181A5" }}>Memuat data loyalitas...</p>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div style={{ background: "#F6F6F6", minHeight: "100vh", paddingBottom: 32 }}>
+      <PageHeader title="Loyalty Program" breadcrumb={["Dashboard", "Loyalty"]}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {lastUpdated && (
+            <span style={{ 
+              fontSize: 11, 
+              color: "#8181A5",
+              background: "#F0F0F3",
+              padding: "4px 12px",
+              borderRadius: 12
+            }}>
+              🕐 {lastUpdated}
+            </span>
+          )}
+          <button 
+            onClick={handleRefresh}
+            disabled={refreshing}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "8px 16px",
+              background: PRIMARY,
+              color: "#FFF",
+              border: "none",
+              borderRadius: 8,
+              cursor: refreshing ? "not-allowed" : "pointer",
+              fontWeight: 600,
+              fontSize: 13,
+              opacity: refreshing ? 0.6 : 1,
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={e => {
+              if (!refreshing) e.currentTarget.style.background = "#1B51E5";
+            }}
+            onMouseLeave={e => {
+              if (!refreshing) e.currentTarget.style.background = PRIMARY;
+            }}
+          >
+            <FaSync style={{ 
+              animation: refreshing ? "spin 0.8s linear infinite" : "none" 
+            }} />
+            {refreshing ? "Memuat..." : "Refresh"}
+          </button>
+        </div>
+      </PageHeader>
+
+      {/* Tier Summary Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 20 }}>
+        <Card padding="20px 22px">
+          <div style={{ background: "rgba(94, 129, 244, 0.1)", borderRadius: 14, padding: "20px 22px", border: "1px solid rgba(94, 129, 244, 0.3)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <FaCrown style={{ fontSize: 22, color: PRIMARY }} />
+              <span style={{ fontSize: 32, fontWeight: 800, color: PRIMARY }}>{gold}</span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: PRIMARY }}>Gold Member</div>
+            <div style={{ fontSize: 11, color: PRIMARY + "99" }}>Tier tertinggi</div>
+          </div>
+        </Card>
+        <Card padding="20px 22px">
+          <div style={{ background: "rgba(129, 129, 165, 0.1)", borderRadius: 14, padding: "20px 22px", border: "1px solid rgba(129, 129, 165, 0.3)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <FaTrophy style={{ fontSize: 22, color: "#8181A5" }} />
+              <span style={{ fontSize: 32, fontWeight: 800, color: "#8181A5" }}>{silver}</span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#8181A5" }}>Silver Member</div>
+            <div style={{ fontSize: 11, color: "#8181A5" + "99" }}>Tier menengah</div>
+          </div>
+        </Card>
+        <Card padding="20px 22px">
+          <div style={{ background: "rgba(244, 190, 94, 0.1)", borderRadius: 14, padding: "20px 22px", border: "1px solid rgba(244, 190, 94, 0.3)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <FaMedal style={{ fontSize: 22, color: WARNING }} />
+              <span style={{ fontSize: 32, fontWeight: 800, color: WARNING }}>{bronze}</span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: WARNING }}>Bronze Member</div>
+            <div style={{ fontSize: 11, color: WARNING + "99" }}>Tier pemula</div>
+          </div>
+        </Card>
+        <Card padding="20px 22px">
+          <div style={{ background: "rgba(170, 171, 176, 0.1)", borderRadius: 14, padding: "20px 22px", border: "1px solid rgba(170, 171, 176, 0.2)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <FaStar style={{ fontSize: 22, color: "#AAABB0" }} />
+              <span style={{ fontSize: 32, fontWeight: 800, color: "#AAABB0" }}>{nonMember}</span>
+            </div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#AAABB0" }}>Non Member</div>
+            <div style={{ fontSize: 11, color: "#AAABB0" + "99" }}>Belum bergabung</div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Main Content */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16, marginBottom: 16 }}>
+        {/* Statistik */}
+        <Card padding="22px 24px">
+          <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>📊 Statistik</div>
+          <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Ringkasan program loyalitas</div>
+          
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ color: "#8181A5" }}>Total Member</span>
+            <span style={{ fontWeight: 700, color: "#1A1A1A" }}>{members.length}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+            <span style={{ color: "#8181A5" }}>Total Poin Beredar</span>
+            <span style={{ fontWeight: 700, color: PRIMARY }}>{totalPoints.toLocaleString()}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <span style={{ color: "#8181A5" }}>Rata-rata Poin</span>
+            <span style={{ fontWeight: 700, color: "#1A1A1A" }}>{avgPoints}</span>
+          </div>
+        </Card>
+
+        {/* Member List */}
+        <Card padding="22px 24px">
+          <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 4 }}>👥 Member</div>
+          <div style={{ fontSize: 12, color: PRIMARY, marginBottom: 20 }}>Progress menuju tier berikutnya</div>
+          
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #F0F0F3" }}>
+                  <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: "#8181A5" }}>Member</th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: "#8181A5" }}>Tier</th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: "#8181A5" }}>Poin</th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: "#8181A5" }}>Favorit</th>
+                  <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 11, color: "#8181A5" }}>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                {membersWithFavorites.slice(0, 10).map(c => {
+                  const t = TIER[c.loyalty_tier] || TIER.None;
+                  return (
+                    <tr key={c.id_customer} style={{ borderBottom: "1px solid #F0F0F3" }}>
+                      <td style={{ padding: "10px 12px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <Avatar name={c.nama_lengkap} size="sm" />
+                          <span style={{ fontWeight: 600, fontSize: 13 }}>{c.nama_lengkap}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 12px" }}>
+                        <TierBadge tier={c.loyalty_tier} />
+                      </td>
+                      <td style={{ padding: "10px 12px", fontWeight: 700, color: PRIMARY }}>
+                        {c.points || 0}
+                      </td>
+                      <td style={{ padding: "10px 12px" }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(94, 129, 244, 0.08)", padding: "3px 10px", borderRadius: 20, width: "fit-content" }}>
+                          <FaCookie size={10} style={{ color: PRIMARY }} />
+                          <span style={{ fontSize: 12, color: PRIMARY }}>{c.favoriteItem}</span>
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px 12px" }}>
+                        {t.nextPts ? (
+                          <>
+                            <ProgressBar value={c.points || 0} max={t.nextPts} color={t.bar} />
+                            <div style={{ fontSize: 10, color: "#8181A5", marginTop: 3 }}>
+                              {Math.max(0, t.nextPts - (c.points || 0))} poin lagi → {t.next}
+                            </div>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: 12, color: PRIMARY, fontWeight: 700 }}>✦ Tier Tertinggi</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      {/* Syarat Naik Tier */}
+      <Card padding="20px 24px">
+        <div style={{ fontWeight: 700, fontSize: 15, color: "#1A1A1A", marginBottom: 16 }}>📈 Syarat Naik Tier</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0 }}>
+          <div style={{ background: "rgba(244, 190, 94, 0.05)", padding: "16px 18px", borderRadius: "10px 0 0 10px", borderRight: "2px solid #FFF" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: WARNING }}>🥉 Bronze</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: WARNING + "99", marginTop: 2 }}>0 - 499 poin</div>
+            <div style={{ fontSize: 12, color: "#8181A5", marginTop: 8 }}>Gratis bergabung, dapatkan poin setiap pembelian</div>
+          </div>
+          <div style={{ background: "rgba(129, 129, 165, 0.05)", padding: "16px 18px", borderRight: "2px solid #FFF" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#8181A5" }}>🥈 Silver</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#8181A5" + "99", marginTop: 2 }}>500 - 999 poin</div>
+            <div style={{ fontSize: 12, color: "#8181A5", marginTop: 8 }}>Diskon 5% untuk semua menu, prioritas antrian</div>
+          </div>
+          <div style={{ background: "rgba(94, 129, 244, 0.05)", padding: "16px 18px", borderRadius: "0 10px 10px 0" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: PRIMARY }}>🥇 Gold</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: PRIMARY + "99", marginTop: 2 }}>1000+ poin</div>
+            <div style={{ fontSize: 12, color: "#8181A5", marginTop: 8 }}>Diskon 10%, akses promo eksklusif, gratis ongkir</div>
+          </div>
+        </div>
+      </Card>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
 }

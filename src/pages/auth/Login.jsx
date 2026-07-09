@@ -1,3 +1,4 @@
+// src/pages/auth/Login.jsx
 import axios from "axios";
 import { useState } from "react";
 import { BsFillExclamationDiamondFill } from "react-icons/bs";
@@ -8,14 +9,14 @@ import { useNavigate, Link } from "react-router-dom";
 // ============================================
 // KONFIGURASI SUPABASE
 // ============================================
-const API_URL = "https://mnddhydtawungftggfdd.supabase.co/rest/v1/users"
-const API_KEY = "sb_publishable_RyKL3yTV04oeVEeprjMVGA_PexGUflQ"
+const API_URL = "https://mnddhydtawungftggfdd.supabase.co/rest/v1/users";
+const API_KEY = "sb_publishable_RyKL3yTV04oeVEeprjMVGA_PexGUflQ";
 
 const headers = {
-  apikey: API_KEY,
-  Authorization: `Bearer ${API_KEY}`,
-  "Content-Type": "application/json",
-}
+    apikey: API_KEY,
+    Authorization: `Bearer ${API_KEY}`,
+    "Content-Type": "application/json",
+};
 
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
@@ -34,46 +35,49 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!dataForm.email || !dataForm.password) {
             setError("Email dan password wajib diisi");
             return;
         }
-        
+
         setLoading(true);
         setError("");
-        
+
         try {
             console.log("🔍 Mencoba login dengan:", dataForm.email);
-            
-            // [FIX] Gunakan ilike untuk case-insensitive
+
             const response = await axios.get(
                 `${API_URL}?email=ilike.${dataForm.email}&password=eq.${dataForm.password}`,
                 { headers }
             );
-            
+
             console.log("📊 Response data:", response.data);
-            console.log("📊 Jumlah data:", response.data.length);
-            
+
             if (response.data.length > 0) {
-                // Login berhasil
                 const userData = response.data[0];
                 console.log("✅ User ditemukan:", userData);
                 localStorage.setItem("user", JSON.stringify(userData));
-                navigate("/dashboard");
+
+                // ============================================================
+                // 🔥 REDIRECT BERDASARKAN ROLE
+                // ============================================================
+                if (userData.role === "customer") {
+                    navigate("/customer/dashboard");  // ← KE CUSTOMER
+                } else {
+                    navigate("/dashboard");           // ← KE ADMIN
+                }
             } else {
-                // Cek apakah email ada (tanpa password)
                 try {
                     const emailCheck = await axios.get(
                         `${API_URL}?email=ilike.${dataForm.email}`,
                         { headers }
                     );
-                    console.log("📧 Cek email:", emailCheck.data);
-                    
+
                     if (emailCheck.data.length > 0) {
-                        setError("❌ Password salah!");
+                        setError("❌ Password salah! Silakan coba lagi.");
                     } else {
-                        setError("❌ Email tidak terdaftar!");
+                        setError("❌ Email tidak terdaftar! Silakan daftar terlebih dahulu.");
                     }
                 } catch (emailErr) {
                     setError("❌ Email atau password salah");
@@ -81,9 +85,6 @@ export default function Login() {
             }
         } catch (err) {
             console.error("❌ Login error:", err);
-            console.error("📋 Error response:", err.response);
-            console.error("📋 Error request:", err.request);
-            
             if (err.response) {
                 setError(err.response.data.message || "Email atau password salah");
             } else if (err.request) {
@@ -123,10 +124,10 @@ export default function Login() {
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 6, fontFamily: "'Lato', sans-serif" }}>Email</label>
                     <div style={{ position: "relative" }}>
                         <FaUser style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
-                        <input 
-                            type="email" 
-                            name="email" 
-                            value={dataForm.email} 
+                        <input
+                            type="email"
+                            name="email"
+                            value={dataForm.email}
                             onChange={handleChange}
                             placeholder="Masukkan email"
                             style={{
@@ -152,10 +153,10 @@ export default function Login() {
                     <label style={{ fontSize: 12, fontWeight: 700, color: "#464A5F", display: "block", marginBottom: 6, fontFamily: "'Lato', sans-serif" }}>Password</label>
                     <div style={{ position: "relative" }}>
                         <FaLock style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 13 }} />
-                        <input 
-                            type={showPass ? "text" : "password"} 
-                            name="password" 
-                            value={dataForm.password} 
+                        <input
+                            type={showPass ? "text" : "password"}
+                            name="password"
+                            value={dataForm.password}
                             onChange={handleChange}
                             placeholder="Masukkan password"
                             style={{
@@ -174,10 +175,11 @@ export default function Login() {
                             onFocus={e => e.target.style.borderColor = PRIMARY}
                             onBlur={e => e.target.style.borderColor = "#ECECF2"}
                         />
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={() => setShowPass(!showPass)}
-                            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#AAABB0", display: "flex" }}>
+                            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#AAABB0", display: "flex" }}
+                        >
                             {showPass ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
                         </button>
                     </div>
@@ -187,8 +189,8 @@ export default function Login() {
                     <Link to="/forgot" style={{ fontSize: 12, color: PRIMARY, fontWeight: 600, textDecoration: "none", fontFamily: "'Lato', sans-serif" }}>Lupa password?</Link>
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={loading}
                     style={{
                         width: "100%",
@@ -205,7 +207,9 @@ export default function Login() {
                     }}
                     onMouseEnter={e => { if (!loading) e.currentTarget.style.background = PRIMARY_DARK; }}
                     onMouseLeave={e => { if (!loading) e.currentTarget.style.background = PRIMARY; }}
-                >Masuk</button>
+                >
+                    Masuk
+                </button>
             </form>
 
             <div style={{ textAlign: "center", marginTop: 20, fontSize: 13, color: "#AAABB0", fontFamily: "'Lato', sans-serif" }}>

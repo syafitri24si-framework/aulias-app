@@ -1,20 +1,22 @@
+// src/layouts/MainLayout.jsx - FULL VERSION
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
     FaTachometerAlt, FaUsers, FaShoppingCart, FaStar, FaTag,
     FaChartBar, FaSignOutAlt, FaBars, FaTimes, FaBell, FaUser,
-    FaSearch, FaUserCog
+    FaSearch, FaUserCog, FaCashRegister
 } from "react-icons/fa";
 import logoRotte from "../assets/logo_rotte.png";
 
 const PRIMARY = "#5E81F4";
 const PRIMARY_DARK = "#1B51E5";
 
-// Base NAV_ITEMS untuk semua user
+// Base NAV_ITEMS untuk semua user (termasuk staff)
 const BASE_NAV_ITEMS = [
     { path: "/dashboard", icon: <FaTachometerAlt size={16} />, label: "Dashboard" },
     { path: "/customers", icon: <FaUsers size={16} />, label: "Customers" },
     { path: "/orders", icon: <FaShoppingCart size={16} />, label: "Orders" },
+    { path: "/transactions", icon: <FaCashRegister size={16} />, label: "Transaksi" },
     { path: "/loyalty", icon: <FaStar size={16} />, label: "Loyalty" },
     { path: "/promos", icon: <FaTag size={16} />, label: "Promos" },
     { path: "/reports", icon: <FaChartBar size={16} />, label: "Reports" },
@@ -56,8 +58,10 @@ export default function MainLayout() {
     console.log("📋 Menu Items:", NAV_ITEMS.map(item => item.label));
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
-        navigate("/login");
+        if (window.confirm("Yakin ingin logout?")) {
+            localStorage.removeItem("user");
+            navigate("/login");
+        }
     };
 
     return (
@@ -67,7 +71,9 @@ export default function MainLayout() {
             background: "#F6F6F6",
             fontFamily: "'Lato', sans-serif"
         }}>
-            {/* Sidebar */}
+            {/* ============================================================ */}
+            {/* SIDEBAR */}
+            {/* ============================================================ */}
             <aside style={{
                 width: collapsed ? 72 : 260,
                 minHeight: "100vh",
@@ -147,8 +153,58 @@ export default function MainLayout() {
                     ))}
                 </nav>
 
-                {/* Logout Button */}
+                {/* User Info & Logout */}
                 <div style={{ padding: "16px 12px", borderTop: "1px solid #F0F0F3" }}>
+                    {/* User Info */}
+                    {!collapsed && (
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                            padding: "8px 10px",
+                            borderRadius: 10,
+                            marginBottom: 12,
+                            background: "rgba(94, 129, 244, 0.05)"
+                        }}>
+                            <div style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: "50%",
+                                background: PRIMARY,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#FFF",
+                                fontWeight: 700,
+                                fontSize: 13,
+                                flexShrink: 0
+                            }}>
+                                {userName.charAt(0).toUpperCase()}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{
+                                    color: "#1A1A1A",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}>
+                                    {userName}
+                                </div>
+                                <div style={{
+                                    color: PRIMARY,
+                                    fontSize: 11,
+                                    fontWeight: 500
+                                }}>
+                                    {userRole === "admin" ? "Administrator" : 
+                                     userRole === "manager" ? "Manager" : "Staff"}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Logout Button */}
                     <button
                         onClick={handleLogout}
                         style={{
@@ -159,8 +215,14 @@ export default function MainLayout() {
                             color: "#8181A5", fontSize: 14, fontWeight: 600,
                             transition: "all 0.2s",
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(94, 129, 244, 0.1)"; e.currentTarget.style.color = PRIMARY; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = "#8181A5"; }}
+                        onMouseEnter={e => { 
+                            e.currentTarget.style.background = "rgba(94, 129, 244, 0.1)"; 
+                            e.currentTarget.style.color = PRIMARY; 
+                        }}
+                        onMouseLeave={e => { 
+                            e.currentTarget.style.background = "none"; 
+                            e.currentTarget.style.color = "#8181A5"; 
+                        }}
                     >
                         <FaSignOutAlt size={14} />
                         {!collapsed && <span>Logout</span>}
@@ -168,7 +230,9 @@ export default function MainLayout() {
                 </div>
             </aside>
 
-            {/* Main Content */}
+            {/* ============================================================ */}
+            {/* MAIN CONTENT */}
+            {/* ============================================================ */}
             <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
                 {/* Topbar Header */}
                 <header style={{
@@ -182,12 +246,31 @@ export default function MainLayout() {
                     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                         <button
                             onClick={() => setCollapsed(!collapsed)}
-                            style={{ background: "none", border: "none", cursor: "pointer", color: PRIMARY, display: "flex", alignItems: "center", padding: 8, borderRadius: 8 }}
+                            style={{ 
+                                background: "none", 
+                                border: "none", 
+                                cursor: "pointer", 
+                                color: PRIMARY, 
+                                display: "flex", 
+                                alignItems: "center", 
+                                padding: 8, 
+                                borderRadius: 8,
+                                transition: "background 0.2s"
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = "rgba(94, 129, 244, 0.08)"}
+                            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                         >
                             {collapsed ? <FaBars size={18} /> : <FaTimes size={18} />}
                         </button>
                         <div style={{ position: "relative", width: 280 }}>
-                            <FaSearch style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#AAABB0", fontSize: 14 }} />
+                            <FaSearch style={{ 
+                                position: "absolute", 
+                                left: 12, 
+                                top: "50%", 
+                                transform: "translateY(-50%)", 
+                                color: "#AAABB0", 
+                                fontSize: 14 
+                            }} />
                             <input
                                 type="text"
                                 placeholder="Search..."
@@ -200,28 +283,91 @@ export default function MainLayout() {
                                     outline: "none",
                                     color: "#464A5F",
                                     background: "#F5F5FA",
-                                    boxSizing: "border-box"
+                                    boxSizing: "border-box",
+                                    transition: "border 0.2s"
                                 }}
+                                onFocus={e => e.target.style.borderColor = PRIMARY}
+                                onBlur={e => e.target.style.borderColor = "#ECECF2"}
                             />
                         </div>
                     </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                        <button style={{ background: "none", border: "none", cursor: "pointer", position: "relative", color: PRIMARY, display: "flex", padding: 8, borderRadius: 8 }}>
+                        {/* Notification Bell */}
+                        <button style={{ 
+                            background: "none", 
+                            border: "none", 
+                            cursor: "pointer", 
+                            position: "relative", 
+                            color: PRIMARY, 
+                            display: "flex", 
+                            padding: 8, 
+                            borderRadius: 8,
+                            transition: "background 0.2s"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(94, 129, 244, 0.08)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                             <FaBell size={17} />
-                            <span style={{ position: "absolute", top: 4, right: 4, width: 8, height: 8, background: "#FF808B", borderRadius: "50%", border: "2px solid #FFF" }} />
+                            <span style={{ 
+                                position: "absolute", 
+                                top: 4, 
+                                right: 4, 
+                                width: 8, 
+                                height: 8, 
+                                background: "#FF808B", 
+                                borderRadius: "50%", 
+                                border: "2px solid #FFF" 
+                            }} />
                         </button>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
+                        
+                        {/* User Profile */}
+                        <div style={{ 
+                            display: "flex", 
+                            alignItems: "center", 
+                            gap: 12, 
+                            cursor: "pointer",
+                            padding: "4px 8px 4px 4px",
+                            borderRadius: 12,
+                            transition: "background 0.2s"
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(94, 129, 244, 0.05)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                             <div style={{
-                                width: 40, height: 40, borderRadius: 12,
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
                                 background: PRIMARY,
-                                display: "flex", alignItems: "center", justifyContent: "center"
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "#FFF",
+                                fontWeight: 700,
+                                fontSize: 14
                             }}>
-                                <FaUser size={14} style={{ color: "#FFF" }} />
+                                {userName.charAt(0).toUpperCase()}
                             </div>
-                            <div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1A1A", lineHeight: 1 }}>{userName}</div>
-                                <div style={{ fontSize: 11, color: PRIMARY }}>{userRole}</div>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <div style={{ 
+                                    fontSize: 13, 
+                                    fontWeight: 700, 
+                                    color: "#1A1A1A", 
+                                    lineHeight: 1,
+                                    maxWidth: 120,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis"
+                                }}>
+                                    {userName}
+                                </div>
+                                <div style={{ 
+                                    fontSize: 10, 
+                                    color: PRIMARY,
+                                    fontWeight: 500,
+                                    textTransform: "capitalize"
+                                }}>
+                                    {userRole === "admin" ? "Administrator" : 
+                                     userRole === "manager" ? "Manager" : userRole}
+                                </div>
                             </div>
                         </div>
                     </div>
